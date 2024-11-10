@@ -40,5 +40,9 @@ public class Propriedade {
         return distrito;
     }
 
+    public String getId() {
+        return id;
+    }
+
     // getters e outros métodos se necessários
 }

@@ -21,20 +21,5 @@ public class Grafo {
         }
     }
 
-    public double calcularAreaMedia(String localidade, String nivel) {
-        double totalArea = 0;
-        int contador = 0;
-
-        for (Propriedade p : propriedades.values()) {
-            if ((nivel.equals("freguesia") && p.getFreguesia().equals(localidade)) ||
-                    (nivel.equals("concelho") && p.getConcelho().equals(localidade)) ||
-                    (nivel.equals("distrito") && p.getDistrito().equals(localidade))) {
-                totalArea += p.getArea();
-                contador++;
-            }
-        }
-        return contador > 0 ? totalArea / contador : 0;
-    }
-
-    // Outros métodos para manipulação do grafo teste
+    // Outros métodos para manipulação do grafo
 }
