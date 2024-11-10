@@ -1,0 +1,14 @@
+public class Main {
+    public static void main(String[] args) {
+        Grafo grafo = new Grafo();
+        String caminhoCSV = "caminho/para/Madeira-Moodle.csv";
+
+        // Carregar dados do CSV para o grafo
+        LeitorCSV.carregarDados(caminhoCSV, grafo);
+
+        // Exemplo de cálculo de área média para uma freguesia
+        String freguesia = "Freguesia Exemplo";
+        double areaMedia = grafo.calcularAreaMedia(freguesia, "freguesia");
+        System.out.println("Área média para a freguesia " + freguesia + ": " + areaMedia);
+    }
+}
