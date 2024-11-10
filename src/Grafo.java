@@ -36,5 +36,5 @@ public class Grafo {
         return contador > 0 ? totalArea / contador : 0;
     }
 
-    // Outros métodos para manipulação do grafo
+    // Outros métodos para manipulação do grafo teste
 }
