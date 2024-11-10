@@ -1,9 +1,11 @@
+package main.java.com.example;
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Grafo grafo = new Grafo();
-        String caminhoCSV = "D:\\ProjEngSoft\\Madeira-Moodle.csv";
+        String caminhoCSV = "D:\\ProjEngSoft\\src\\main\\resources\\Madeira-Moodle.csv";
         // Carregar dados do CSV para o grafo
         LeitorCSV.carregarDados(caminhoCSV, grafo);
 
