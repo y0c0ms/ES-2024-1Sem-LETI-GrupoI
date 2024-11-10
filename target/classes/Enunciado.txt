@@ -1,0 +1,104 @@
+
+ENUNCIADO DO PROJETO DE ENGENHARIA DE SOFTWARE
+TÍTULO Aplicação de apoio à decisão para gestão do território
+
+DESCRIÇÃO
+O projeto de ES tem como objetivo o desenvolvimento de software de apoio à decisão para a gestão mais equilibrada e
+sustentável do território. É amplamente conhecido e consensual que Portugal tem um desequilíbrio muito acentuado de
+distribuição da população entre o interior (territórios de baixa densidade populacional) e o litoral do país. Este
+desequilíbrio é particularmente grave em Portugal, quando comparado com os restantes países da Europa. A alta
+fragmentação das propriedades nas áreas não urbanas do interior do país, constitui um dos fatores que influencia de
+forma determinante este fenómeno. A área média muito baixa deste tipo de propriedades, inviabiliza a sua exploração
+(por exemplo, para fins agrícolas, florestais, etc.), levando ao abandono progressivo destes territórios, à concentração
+crescente da população no litoral do país, à crescente pressão demográfica e dificuldade de gestão dos territórios urbanos
+no litoral.
+O problema da alta fragmentação das propriedades rústicas do interior de Portugal, tem sido objeto de múltiplas
+iniciativas administrativas e de política pública para o “emparcelamento” dos territórios de baixa densidade populacional,
+mas sem sucesso. A “desfragmentação” do território pode beneficiar de ferramentas informáticas para apoio à decisão,
+no sentido de proporcionar informação para identificar e facilitar a troca de propriedades entre proprietários, por forma
+a que as propriedades do mesmo proprietário sejam contíguas (vizinhas/adjacentes).
+
+No projeto de ES a ser realizado em grupos de 4 estudantes (máximo), deverá ser desenvolvida uma aplicação Java que:
+1) Permita carregar os dados do cadastro de propriedades rústicas em Portugal, a partir das fontes de dados
+publicamente disponíveis em https://www.ifap.pt/isip/ows/ . É fornecido um ficheiro em formato CSV (Comma-Separated
+Value) no Moodle (“Madeira-Moodle.csv”), com dados do cadastro de propriedades rústicas da região autónoma da
+Madeira, que pode ser usado como fonte de dados para a aplicação a desenvolver pelo grupo;
+2) Permita representar sob a forma de um grafo (estrutura de dados) o cadastro de propriedades rústicas, onde os nós
+representam as propriedades e as arestas representam as relações de adjacência entre os nós (entre as propriedades);
+3) Permita calcular a área média das propriedades, de uma área geográfica/administrativa indicada pelo utilizador
+(freguesia, concelho, distrito);
+4) Permita calcular a área média das propriedades, assumindo que propriedades adjacentes, do mesmo proprietário,
+devem ser consideradas como uma única propriedade, para uma área geográfica/administrativa indicada pelo utilizador;
+5) Permita representar sob a forma de um grafo (estrutura de dados) a relação de vizinhança entre proprietários, onde
+os nós representam os proprietários e as arestas representam as relações de vizinhança entre os nós (entre os
+proprietários). Considera-se que um proprietário é vizinho de outro proprietário se os mesmos possuírem propriedades
+contíguas;
+6) Permita gerar sugestões para troca de propriedades entre proprietários, que maximizem a área média das
+propriedades por proprietário (área média entendida segundo o cálculo descrito no ponto 4). Na sugestão de trocas,
+deve ser considerado não só o aumento de área média proporcionado por essa troca, mas também o potencial da troca
+ser realizada pelos proprietários. Por exemplo, a sugestão de troca de uma propriedade de 10 m2 por outra propriedade
+de 11 m2 entre dois proprietários, tem mais potencial de ser realizada, do que a sugestão de troca de uma propriedade
+de 10 m2 por outra propriedade de 100 m2. Assume-se que os proprietários envolvidos nas trocas têm interesse em
+incorrer nos custos mínimos possíveis para realizar a transação.
+
+ATIVIDADES ENVOLVIDAS E SUAS TECNOLOGIAS
+ATIVIDADE TECNOLOGIAS
+Ambiente de programação / IDE - À escolha de cada grupo neste caso VScode
+Gestão de configurações / controlo de versões no repositório local - SCM Git
+Gestão de configurações / controlo de versões no repositório remoto para suporte ao trabalho colaborativo e entrega do projeto - GitHub.com
+Gestão de dependências das bibliotecas que forem usadas - Maven
+Avaliação da qualidade do software produzido, a partir das métricas extraídas do código - À escolha de cada grupo
+Testes e avaliação de cobertura de testes - JUnit e plugin do IDE
+Documentação do software produzido - JavaDoc
+Gestão do projeto segundo abordagem Scrum, com rastreio entre os cartões das user stories e os eventos respetivos no GitHub (commits, pull requests) - Trello com Power-Up do GitHub
+
+
+ELEMENTOS AENTREGAR
+(Deliverables)
+Os elementos a disponibilizar na entrega do projeto são:
+• Repositório do projeto na plataforma GitHub, com identificador ES-2024-1Sem-LETIIdentificador_do_Grupo_no_Moodle (por exemplo, o grupo identificado no Moodle como GrupoB, deve criar um
+repositório com a identificação ES-2024-1Sem-LETI-GrupoA na plataforma GitHub);
+• A pasta raiz deve conter um ficheiro de texto “README.md” com a identificação do grupo, identificação dos membros
+do grupo (nome, número de estudante e username no GitHub), identificação e descrição de erros e funcionalidades
+não implementadas ou incompletas;
+• Deve ser associado o rótulo GestaodoTerritorio-1.0 ao último commit feito no ramo main do repositório no GitHub;
+• Relatório de avaliação da qualidade do software do projeto gerado pela ferramenta escolhida pelo grupo,
+disponibilizado no repositório GitHub;
+• Documentação do software produzido (JavaDoc), disponibilizado no repositório GitHub;
+• Bateria de testes, sem falhas, com uma cobertura de funcionalidades do software produzido superior a 50% em 2
+métricas de cobertura de testes;
+• Evidências da gestão ágil do projeto segundo a abordagem Scrum, nomeadamente:
+o representação das user stories, Sprints e cerimónias;
+o elementos relativos ao planeamento de cada Sprint (o quê, quem e quando);
+o evolução do sprint (burndown chart) e rastreio entre os cartões relativos às user stories com os eventos na
+plataforma GitHub (commits, pull requests).
+
+
+MÉTODO DE AVALIAÇÃO
+
+O projeto prático será avaliado de acordo com os seguintes parâmetros de avaliação.
+
+Apresentação de Progresso do Projeto (15% de peso na nota final da UC, 11-15/Nov/2024)
+• 20%, correta utilização do Git e organização do repositório do grupo na plataforma GitHub;
+• 35%, correta adoção da abordagem Scrum na gestão e condução do projeto, com os correspondentes registos na
+plataforma Trello, ligados ao GitHub;
+• 20%, implementação dos requisitos indicados no ponto 1 e 2 da descrição do projeto;
+• 15%, testes, sem falhas, com uma cobertura de testes do software produzido superior a 50% em 2 métricas de
+cobertura de testes;
+• 10%, qualidade técnica do trabalho (documentação, qualidade do código, adoção de boas práticas de programação).
+
+
+Apresentação Final do Projeto (35% de peso na nota final da UC, 9-13/Dez/2024)
+• 15%, correta utilização do Git e organização do repositório do grupo na plataforma GitHub;
+• 30%, correta adoção da abordagem Scrum na gestão e condução do projeto, com os correspondentes registos na
+plataforma Trello, ligados ao GitHub;
+• 30%, implementação das funcionalidades da aplicação de acordo com os requisitos do enunciado;
+• 15%, testes, sem falhas, com uma cobertura de testes do software produzido superior a 50% em 2 métricas de
+cobertura de testes;
+• 10%, qualidade técnica do trabalho (documentação, qualidade do código, adoção de boas práticas de programação).
+A avaliação do trabalho será realizada sobre o projeto como um todo, mas as classificações serão individualizadas, com
+base no desempenho das apresentações (de progresso e final do projeto) e nas atividades planeadas (atribuídas) a cada
+membro da equipa e as efetivamente realizadas, tal como registado nas ferramentas Trello e GitHub. Note-se que estas
+ferramentas permitem a verificação cronológica e auditoria do progresso de cada projeto.
+Os projetos serão objeto de comparação para efeitos de deteção de plágio. A deteção de práticas fraudulentas levará
+ao desencadear das sanções previstas nos regulamentos do Iscte.

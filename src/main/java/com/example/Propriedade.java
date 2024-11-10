@@ -1,4 +1,4 @@
-package main.java.com.example;
+package com.example;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ public class Propriedade {
         this.shapeArea = shapeArea;
         this.geometryWKT = geometryWKT;
         this.owner = owner;
+        this.geometry = geometry;
 
         // Inicializando a geometria a partir do WKT
         try {
@@ -70,9 +71,14 @@ public class Propriedade {
         return owner;
     }
 
-    // Getter para a geometria JTS
     public Geometry getGeometry() {
-        return geometry;
+        try {
+            WKTReader reader = new WKTReader();
+            return reader.read(geometryWKT);
+        } catch (ParseException e) {
+            System.err.println("Erro ao interpretar a geometria WKT: " + e.getMessage());
+            return null;
+        }
     }
 
     // Override do método equals e hashCode para garantir a comparação correta em

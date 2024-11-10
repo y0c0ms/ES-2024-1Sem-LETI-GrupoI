@@ -1,50 +1,39 @@
-package main.java.com.example;
+package com.example;
 
-import java.util.Scanner;
+import java.util.List;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        Grafo grafo = new Grafo();
-        String caminhoCSV = "D:\\ProjEngSoft\\src\\main\\resources\\Madeira-Moodle.csv";
-        // Carregar dados do CSV para o grafo
-        LeitorCSV.carregarDados(caminhoCSV, grafo);
+        // Step 1: Load properties from CSV file
+        String csvFilePath = "D:\\ProjEngSoft\\src\\main\\resources\\Madeira-Moodle.csv";
+        LeitorCSV leitor = new LeitorCSV();
+        List<Propriedade> propriedades = leitor.lerPropriedades(csvFilePath);
 
-        Scanner scanner = new Scanner(System.in);
-
-        // Solicitar ao usuário a área geográfica/administrativa e o tipo
-        System.out.println("Escolha a área geográfica/administrativa:");
-        System.out.println("1. Freguesia");
-        System.out.println("2. Concelho");
-        System.out.println("3. Distrito");
-        int escolha = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        String tipo = getAreaTipo(escolha);
-
-        if (tipo != null) {
-            System.out.println("Digite o nome da " + tipo + ":");
-            String area = scanner.nextLine();
-
-            // Calcular a área média para a área e tipo especificados
-            double areaMedia = grafo.calcularAreaMedia(area, tipo);
-            System.out.println("Área média para a " + tipo + " " + area + ": " + areaMedia);
-        } else {
-            System.out.println("Escolha inválida.");
+        // Check if properties were loaded correctly
+        if (propriedades.isEmpty()) {
+            System.out.println("Nenhuma propriedade foi carregada. Verifique o caminho do arquivo e o formato do CSV.");
+            return;
         }
 
-        scanner.close();
-    }
+        // Step 2: Create a graph instance and add properties
+        Grafo grafo = new Grafo();
 
-    private static String getAreaTipo(int escolha) {
-        switch (escolha) {
-            case 1:
-                return "Freguesia";
-            case 2:
-                return "Concelho";
-            case 3:
-                return "Distrito";
-            default:
-                return null;
+        for (Propriedade propriedade : propriedades) {
+            grafo.adicionarPropriedade(propriedade);
+        }
+
+        // Step 3: Calculate adjacencies between properties
+        grafo.calcularAdjacencias(propriedades);
+
+        // Step 4: (Optional) Print the adjacency list for verification
+        System.out.println("Adjacências calculadas:");
+        for (Propriedade prop : propriedades) {
+            System.out.println("Propriedade ID: " + prop.getObjectId() + " é adjacente a:");
+            Set<Propriedade> adjacentes = grafo.getAdjacentes(prop);
+            for (Propriedade adj : adjacentes) {
+                System.out.println("    -> Propriedade ID: " + adj.getObjectId());
+            }
         }
     }
 }
