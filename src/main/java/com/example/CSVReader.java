@@ -9,9 +9,13 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class CSVReader {
-    public static void main(String[] args) {
-        String csvFilePath = "D:\\ProjEngSoft\\Madeira-Moodle.csv";
+    private String csvFilePath;
 
+    public CSVReader(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+    }
+
+    public void readCSV() {
         try (Reader reader = new FileReader(csvFilePath);
                 CSVParser csvParser = new CSVParser(reader,
                         CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
@@ -32,7 +36,6 @@ public class CSVReader {
                 String owner = csvRecord.get("OWNER");
 
                 System.out.println("Record No - " + csvRecord.getRecordNumber());
-                System.out.println("---------------");
                 System.out.println("OBJECTID: " + objectId);
                 System.out.println("PAR_ID: " + parId);
                 System.out.println("PAR_NUM: " + parNum);
@@ -40,7 +43,7 @@ public class CSVReader {
                 System.out.println("Shape_Area: " + shapeArea);
                 System.out.println("geometry: " + geometry);
                 System.out.println("OWNER: " + owner);
-                System.out.println("---------------\n");
+                System.out.println("---------------------------");
             }
         } catch (IOException e) {
             e.printStackTrace();
