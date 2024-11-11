@@ -8,7 +8,7 @@ public class Main {
         // Step 1: Load properties from CSV file
         String csvFilePath = "D:\\ProjEngSoft\\src\\main\\resources\\Madeira-Moodle.csv";
         LeitorCSV leitor = new LeitorCSV();
-        List<Propriedade> propriedades = leitor.lerPropriedades(csvFilePath);
+        List<Propriedade> propriedades = leitor.lerCSV(csvFilePath);
 
         // Check if properties were loaded correctly
         if (propriedades.isEmpty()) {
@@ -24,16 +24,7 @@ public class Main {
         }
 
         // Step 3: Calculate adjacencies between properties
-        grafo.calcularAdjacencias(propriedades);
+        grafo.calcularAdjacencias();
 
-        // Step 4: (Optional) Print the adjacency list for verification
-        System.out.println("Adjacências calculadas:");
-        for (Propriedade prop : propriedades) {
-            System.out.println("Propriedade ID: " + prop.getObjectId() + " é adjacente a:");
-            Set<Propriedade> adjacentes = grafo.getAdjacentes(prop);
-            for (Propriedade adj : adjacentes) {
-                System.out.println("    -> Propriedade ID: " + adj.getObjectId());
-            }
-        }
     }
 }

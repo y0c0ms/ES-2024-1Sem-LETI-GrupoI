@@ -1,26 +1,38 @@
 package com.example;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Grafo {
-    private Map<Propriedade, Set<Propriedade>> listaAdjacencia = new HashMap<>();
-    private GeometryFactory geometryFactory = new GeometryFactory();
-    private WKTReader reader = new WKTReader(geometryFactory);
+    private Map<Propriedade, Set<Propriedade>> listaAdjacencia;
+    private List<Propriedade> propriedades;
 
-    public void adicionarPropriedade(Propriedade propriedade) {
-        listaAdjacencia.putIfAbsent(propriedade, new HashSet<>());
+    public Grafo() {
+        this.listaAdjacencia = new HashMap<>();
+        this.propriedades = new ArrayList<>();
     }
 
-    public void calcularAdjacencias(List<Propriedade> propriedades) {
+    public void adicionarPropriedade(Propriedade propriedade) {
+        if (!listaAdjacencia.containsKey(propriedade)) {
+            listaAdjacencia.put(propriedade, new HashSet<>());
+            propriedades.add(propriedade);
+        }
+    }
+
+    public Set<Propriedade> getAdjacentes(Propriedade propriedade) {
+        return listaAdjacencia.getOrDefault(propriedade, Collections.emptySet());
+    }
+
+    public List<Propriedade> getPropriedades() {
+        return propriedades;
+    }
+
+    public void calcularAdjacencias() {
+        WKTReader reader = new WKTReader();
+
         for (int i = 0; i < propriedades.size(); i++) {
             Propriedade prop1 = propriedades.get(i);
             String geom1WKT = prop1.getGeometryWKT();
@@ -66,9 +78,5 @@ public class Grafo {
     private void adicionarAdjacencia(Propriedade prop1, Propriedade prop2) {
         listaAdjacencia.get(prop1).add(prop2);
         listaAdjacencia.get(prop2).add(prop1);
-    }
-
-    public Set<Propriedade> getAdjacentes(Propriedade propriedade) {
-        return listaAdjacencia.getOrDefault(propriedade, new HashSet<>());
     }
 }
