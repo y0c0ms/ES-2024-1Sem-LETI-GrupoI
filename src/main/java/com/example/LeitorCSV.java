@@ -1,37 +1,38 @@
 package com.example;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 public class LeitorCSV {
+
     public List<Propriedade> lerCSV(String filePath) {
         List<Propriedade> propriedades = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(";");
-                if (values.length > 5) {
-                    String objectId = values[0];
-                    String wktGeometry = values[5];
-                    if (wktGeometry == null || wktGeometry.trim().isEmpty()) {
-                        System.err.println("Aviso: Geometria WKT nula ou vazia para a propriedade ID: " + objectId);
-                        continue;
-                    }
-                    Propriedade propriedade = new Propriedade(objectId, wktGeometry);
-                    if (propriedade.getGeometry() != null) {
-                        propriedades.add(propriedade);
-                    } else {
-                        System.err.println("Aviso: Geometria inválida para a propriedade ID: " + objectId);
-                    }
-                }
+
+        try (Reader reader = new FileReader(filePath);
+                CSVParser csvParser = new CSVParser(reader,
+                        CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
+
+            for (CSVRecord csvRecord : csvParser) {
+                String objectId = csvRecord.get("OBJECTID");
+                String geometry = csvRecord.get("geometry");
+                // Add other fields as needed
+
+                Propriedade propriedade = new Propriedade(objectId, geometry);
+                propriedades.add(propriedade);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error parsing CSV file: " + e.getMessage());
         }
+
         return propriedades;
     }
-    //miguel é inutil
 }

@@ -1,82 +1,44 @@
 package com.example;
 
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Grafo {
-    private Map<Propriedade, Set<Propriedade>> listaAdjacencia;
-    private List<Propriedade> propriedades;
+    private SimpleGraph<Propriedade, DefaultEdge> graph;
+    private Map<String, Propriedade> propriedadesMap;
 
     public Grafo() {
-        this.listaAdjacencia = new HashMap<>();
-        this.propriedades = new ArrayList<>();
+        this.graph = new SimpleGraph<>(DefaultEdge.class);
+        this.propriedadesMap = new HashMap<>();
     }
 
-    public void adicionarPropriedade(Propriedade propriedade) {
-        if (!listaAdjacencia.containsKey(propriedade)) {
-            listaAdjacencia.put(propriedade, new HashSet<>());
-            propriedades.add(propriedade);
-        }
+    public void addPropriedade(Propriedade propriedade) {
+        graph.addVertex(propriedade);
+        propriedadesMap.put(propriedade.getObjectId(), propriedade);
     }
 
-    public Set<Propriedade> getAdjacentes(Propriedade propriedade) {
-        return listaAdjacencia.getOrDefault(propriedade, Collections.emptySet());
-    }
-
-    public List<Propriedade> getPropriedades() {
-        return propriedades;
-    }
-
-    public void calcularAdjacencias() {
-        WKTReader reader = new WKTReader();
-
-        for (int i = 0; i < propriedades.size(); i++) {
-            Propriedade prop1 = propriedades.get(i);
-            String geom1WKT = prop1.getGeometryWKT();
-
-            if (geom1WKT == null || geom1WKT.isEmpty()) {
-                System.err.println("Aviso: Geometria WKT nula ou vazia para a propriedade ID: " + prop1.getObjectId());
-                continue; // Skip this property if WKT is not valid
-            }
-
-            // Clean up geometry WKT (remove extra spaces, trim, etc.)
-            geom1WKT = geom1WKT.trim().replaceAll("\\s+", " ");
-
-            try {
-                Geometry geom1 = reader.read(geom1WKT);
-
-                for (int j = i + 1; j < propriedades.size(); j++) {
-                    Propriedade prop2 = propriedades.get(j);
-                    String geom2WKT = prop2.getGeometryWKT();
-
-                    if (geom2WKT == null || geom2WKT.isEmpty()) {
-                        System.err.println(
-                                "Aviso: Geometria WKT nula ou vazia para a propriedade ID: " + prop2.getObjectId());
-                        continue; // Skip this property if WKT is not valid
-                    }
-
-                    // Clean up geometry WKT
-                    geom2WKT = geom2WKT.trim().replaceAll("\\s+", " ");
-
-                    Geometry geom2 = reader.read(geom2WKT);
-
-                    if (geom1.touches(geom2)) {
-                        adicionarAdjacencia(prop1, prop2);
-                    }
+    public void addAdjacencias() {
+        for (Propriedade p1 : graph.vertexSet()) {
+            for (Propriedade p2 : graph.vertexSet()) {
+                if (!p1.equals(p2) && p1.getGeometry().touches(p2.getGeometry())) {
+                    graph.addEdge(p1, p2);
                 }
-            } catch (ParseException e) {
-                System.err.println("Erro ao interpretar a geometria WKT para a propriedade ID: " + prop1.getObjectId()
-                        + " - " + e.getMessage());
-                System.err.println("Geometria com problema: " + geom1WKT);
             }
         }
     }
 
-    private void adicionarAdjacencia(Propriedade prop1, Propriedade prop2) {
-        listaAdjacencia.get(prop1).add(prop2);
-        listaAdjacencia.get(prop2).add(prop1);
+    public SimpleGraph<Propriedade, DefaultEdge> getGraph() {
+        return graph;
+    }
+
+    public Propriedade getPropriedadeById(String objectId) {
+        return propriedadesMap.get(objectId);
     }
 }
