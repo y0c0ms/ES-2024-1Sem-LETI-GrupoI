@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.example</groupId>
-  <artifactId>ProJEngSoft</artifactId>
+  <artifactId>demo</artifactId>
   <version>1</version>
 
   <name>demo</name>
@@ -13,8 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -40,13 +40,13 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>24-ea+15</version>
+      <version>13</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-fxml -->
     <dependency>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-fxml</artifactId>
-        <version>24-ea+15</version>
+        <version>13</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/jgraph/jgraph -->
     <dependency>
@@ -54,24 +54,63 @@
         <artifactId>jgraph</artifactId>
         <version>5.13.0.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.jgrapht/jgrapht-core -->
+    <dependency>
+        <groupId>org.jgrapht</groupId>
+        <artifactId>jgrapht-core</artifactId>
+        <version>1.5.2</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.jgrapht/jgrapht-ext -->
+    <dependency>
+        <groupId>org.jgrapht</groupId>
+        <artifactId>jgrapht-ext</artifactId>
+        <version>1.5.2</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.jgrapht/jgrapht-io -->
+    <dependency>
+        <groupId>org.jgrapht</groupId>
+        <artifactId>jgrapht-io</artifactId>
+        <version>1.5.2</version>
+    </dependency>
   </dependencies>
   
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
+       <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+        <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.6</version>
+                <executions>
+                    <execution>
+                        <!-- Default configuration for running -->
+                        <!-- Usage: mvn clean javafx:run -->
+                        <id>default-cli</id>
+                        <configuration>
+                            <mainClass>com.example.Main</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
         <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-             
         <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-            </plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
