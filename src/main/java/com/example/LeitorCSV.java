@@ -33,4 +33,5 @@ public class LeitorCSV {
         }
         return propriedades;
     }
+    //miguel é inutil
 }
