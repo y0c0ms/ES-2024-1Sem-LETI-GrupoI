@@ -21,7 +21,6 @@ public class CSVReader {
 
 
        //Method that stores de information read in the csv file in the variable data, making it accessible whenever we want to use it without having to read the file again
-
        public void readCSV() {
         try (Reader reader = new FileReader(csvFilePath);
                 CSVParser csvParser = new CSVParser(reader,
@@ -38,11 +37,11 @@ public class CSVReader {
 
     //getting a record by its id
     public CSVRecord getRecordByOBJECTID(int objId){
-        if(objId < 0 || objId >= data.size()){
+        if(objId <= 0 || objId >= data.size()){
             System.out.println("Invalid object id! Id doesn't exist");
             return null;
         }
-        return data.get(objId);
+        return data.get(objId-1);
     }
 
 
