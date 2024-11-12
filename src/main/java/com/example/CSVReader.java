@@ -119,15 +119,37 @@ public class CSVReader {
 
     // Main method for testing/debugging
     public static void main(String[] args) {
-        CSVReader test = new CSVReader();
+        CSVReader csvReader = new CSVReader();
+        csvReader.readCSV();
 
-        // Read CSV and create Property objects
-        test.readCSV();
-        List<Property> properties = test.createProperties();
+        // Create the list of Property objects
+        List<Property> properties = csvReader.createProperties();
 
-        // Example: Print the properties created
+        // Define two OBJECTIDs for testing adjacency
+        int objectId1 = 3; // Replace with actual OBJECTID
+        int objectId2 = 121; // Replace with actual OBJECTID
+
+        // Retrieve the Property objects for the specified OBJECTIDs
+        Property property1 = null;
+        Property property2 = null;
+
         for (Property property : properties) {
-            System.out.println("Property ID: " + property.getObjectId() + ", Owner: " + property.getOwner());
+            if (property.getObjectId() == objectId1) {
+                property1 = property;
+            } else if (property.getObjectId() == objectId2) {
+                property2 = property;
+            }
+            if (property1 != null && property2 != null) {
+                break;
+            }
+        }
+
+        // Check if the properties are adjacent
+        if (property1.getGeometry() != null && property2.getGeometry() != null) {
+            boolean areAdjacent = property1.isAdjacent(property2);
+            System.out.println("Are properties " + objectId1 + " and " + objectId2 + " adjacent? " + areAdjacent);
+        } else {
+            System.out.println("One or both properties do not have valid geometries.");
         }
     }
 }

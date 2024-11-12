@@ -11,6 +11,8 @@
 - Issue 1: Inicialmente pensávamos que os grafos deveriam ser diagramas pelo que tentamos desenvolver uma classe que faria estes diagramas (sem muito sucesso)
 - Issue 2: Gestão e documentação do código(será corrigido brevemente).
 
+- Issue 3: O ficheiro CSV providenciado contem um erro de formatação no OBJECTID 9323 que teve que ser editada manualamnete. O programa na sua versão final deverá 
+
 ### Funcionalidades Incompletas
 - Funcionalidade 1: Permita calcular a área média das propriedades, de uma área geográfica/administrativa indicada pelo utilizador (freguesia, concelho, distrito);
 - Funcionalidade 2: Permita calcular a área média das propriedades, assumindo que propriedades adjacentes, do mesmo proprietário, devem ser consideradas como uma única propriedade, para uma área geográfica/administrativa indicada pelo utilizador;

@@ -27,13 +27,21 @@ public class Property {
         this.shapeLength = shapeLength;
         this.owner = owner;
         this.coordinates = new HashSet<>();
+
+        // Attempt to parse the geometry and handle any parsing issues gracefully
         this.geometry = parseGeometry(geometryStr); // Parse geometry and extract coordinates
     }
 
     // Parse MULTIPOLYGON geometry from WKT string and populate coordinates set
     private Geometry parseGeometry(String geometryStr) {
+        if (geometryStr == null || geometryStr.trim().isEmpty()) {
+            System.err.println("Warning: Empty geometry string for Property ID " + objectid);
+            return null; // Return null or handle as needed
+        }
+
         GeometryFactory geometryFactory = new GeometryFactory();
         WKTReader reader = new WKTReader(geometryFactory);
+
         try {
             Geometry geom = reader.read(geometryStr);
             for (Coordinate coord : geom.getCoordinates()) {
@@ -41,13 +49,17 @@ public class Property {
             }
             return geom;
         } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
+            System.err.println("Error parsing geometry for Property ID " + objectid + ": " + e.getMessage());
+            return null; // Return null or handle as needed
         }
     }
 
     // Check adjacency based on shared coordinates
     public boolean isAdjacent(Property other) {
+        if (this.geometry == null || other.geometry == null) {
+            return false; // Cannot be adjacent if one of the geometries is null
+        }
+
         for (Coordinate coord : this.coordinates) {
             if (other.coordinates.contains(coord)) {
                 return true; // They are adjacent if any coordinate is shared

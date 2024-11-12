@@ -1,3 +1,5 @@
 com\example\CSVReader.class
+com\example\Property.class
+com\example\Graph.class
 com\example\Main.class
-com\example\MultipolygonGraph.class
+com\example\AdjacencyCheckerGUI.class
