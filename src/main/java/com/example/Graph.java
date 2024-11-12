@@ -35,4 +35,9 @@ public class Graph {
     public List<Property> getAdjacentProperties(Property property) {
         return adjacencyList.getOrDefault(property, new ArrayList<>());
     }
+
+    // Method to retrieve all properties in the graph
+    public List<Property> getProperties() {
+        return properties;
+    }
 }
