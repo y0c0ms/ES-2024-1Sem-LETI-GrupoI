@@ -4,7 +4,7 @@
 - Manuel Santos (111087) - [y0c0ms](https://github.com/y0c0ms)
 - Miguel Reis (111035) - [miguelcreis](https://github.com/miguelcreis)
 - João Oliveira (111568) - [JoaoOliveira](https://github.com/JoaoOliveira)
-- Andre Costa (11118) - [Andre3648](https://github.com/Andre3648)
+- André Costa (11118) - [Andre3648](https://github.com/Andre3648)
 
 
 ### Principais Problemas
