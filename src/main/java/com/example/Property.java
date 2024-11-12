@@ -1,4 +1,6 @@
 package com.example;
+import java.util.List;
+import java.util.ArrayList;
 import org.locationtech.jts.geom.Geometry;
 
 public class Property {
@@ -9,6 +11,7 @@ public class Property {
     private double shapeLength;
     private Geometry geometry;
     private int owner;
+    private List<Property> adjacent;
 
     public Property(int objectid, double par_id, double par_num, double shapeArea, double shapeLength, Geometry geometry, int owner){
         this.objectid = objectid;
@@ -18,6 +21,7 @@ public class Property {
         this.shapeLength = shapeLength;
         this.geometry = geometry;
         this.owner = owner;
+        adjacent = new Arraylist<Property>();
     }
 
     //Utilizes the library geometry to confirm if the property1 and 2 are adjacent

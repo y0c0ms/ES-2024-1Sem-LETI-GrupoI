@@ -1,5 +1,8 @@
 package com.example;
+import java.util.List;
 
 public class Grafo {
-    private 
+    private List<Property> Nodes;
+    
+
 }
