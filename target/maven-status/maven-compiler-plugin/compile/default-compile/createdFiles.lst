@@ -2,4 +2,5 @@ com\example\CSVReader.class
 com\example\Property.class
 com\example\Graph.class
 com\example\Main.class
+com\example\PropertyMapVisualizer.class
 com\example\AdjacencyCheckerGUI.class
