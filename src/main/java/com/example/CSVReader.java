@@ -10,12 +10,11 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class CSVReader {
-    private String csvFilePath;
+    private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle.csv";
     private List<CSVRecord> data;
 
     //CSVReader constructor
-    public CSVReader(String csvFilePath) {
-        this.csvFilePath = csvFilePath;
+    public CSVReader() {
         data = new ArrayList<CSVRecord>();
     }
 
@@ -34,7 +33,17 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
+    public CSVRecord getRecord(int index){
+        if(index <= 0 || index >= data.size()){
+            System.err.println("Invalid index");
+            return null;
+        }
+        return data.get(index-1);
+    }
 
+    public String getPolygon(CSVRecord record){
+        return record.get("geometry");
+    }
     //getting a record by its id
     public CSVRecord getRecordByOBJECTID(int objId){
         if(objId <= 0 || objId >= data.size()){
@@ -83,7 +92,7 @@ public class CSVReader {
 
     //main for debugging the class
     public static void main(String [] args){
-        CSVReader test = new CSVReader("C:/Users/jmari/OneDrive/Ambiente de Trabalho/ProjEngSoft/ES-2024-1Sem-LETI-GrupoI/Madeira-Moodle.csv");
+        CSVReader test = new CSVReader();
         //printCSV() its working
         //test.printCSV()
         

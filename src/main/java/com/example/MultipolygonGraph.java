@@ -1,5 +1,9 @@
 package com.example;
 
+import java.util.List;
+
+import org.apache.commons.csv.CSVRecord;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
@@ -14,45 +18,17 @@ public class MultipolygonGraph extends Application {
     @Override
     public void start(Stage stage) {
         // Coordenadas do multipolígono
-        double[][] coordinates1 = {
-                { 299218.5203999998, 3623637.4791 },
-                { 299218.5033999998, 3623637.4715 },
-                { 299218.04000000004, 3623638.4800000004 },
-                { 299232.7400000002, 3623644.6799999997 },
-                { 299236.6233999999, 3623637.1974 },
-                { 299236.93709999975, 3623636.7885999996 },
-                { 299238.04000000004, 3623633.4800000004 },
-                { 299222.63999999966, 3623627.1799999997 },
-                { 299218.5203999998, 3623637.4791 } // Fechando o loop
-        };
 
-        double[][] coordinates2 = {
-                { 298724.1991999997, 3623192.6094000004 },
-                { 298724.3200000003, 3623192.619999999 },
-                { 298724.26999999955, 3623185.7200000007 },
-                { 298723.8854, 3623185.681500001 },
-                { 298723.8854, 3623185.6338 },
-                { 298717.2167999996, 3623184.6405999996 },
-                { 298716.2909000004, 3623184.495100001 },
-                { 298716.1699999999, 3623184.5700000003 },
-                { 298711.51999999955, 3623184.17 },
-                { 298709.1414000001, 3623183.7961999997 },
-                { 298708.48000000045, 3623183.3200000003 },
-                { 298705.6799999997, 3623183.2200000007 },
-                { 298704.5800000001, 3623183.3200000003 },
-                { 298703.98000000045, 3623184.119999999 },
-                { 298703.48000000045, 3623190.7200000007 },
-                { 298704.0525000002, 3623190.7905 },
-                { 298704.0488999998, 3623190.8441000003 },
-                { 298705.574, 3623190.9777000006 },
-                { 298709.98000000045, 3623191.5199999996 },
-                { 298710.0937999999, 3623191.3737000003 },
-                { 298724.1991999997, 3623192.6094000004 } // Fechando o loop
-        };
+        CSVReader csv = new CSVReader();
+        csv.readCSV();
+        
+        double[][] coordinates1 = extrairCoordenadas(csv.getPolygon(csv.getRecord(1)));
+        double[][] coordinates2 = extrairCoordenadas(csv.getPolygon(csv.getRecord(2)));
 
+       
         // Definindo os eixos
-        NumberAxis xAxis = new NumberAxis(298700, 299300, 100); // Ajuste os valores conforme necessário
-        NumberAxis yAxis = new NumberAxis(3623100, 3623700, 100); // Ajuste os valores conforme necessário
+        NumberAxis xAxis = new NumberAxis(0, 1000000, 100); // Ajuste os valores conforme necessário
+        NumberAxis yAxis = new NumberAxis(0, 1000000, 100); // Ajuste os valores conforme necessário
         xAxis.setLabel("Coordenada X");
         yAxis.setLabel("Coordenada Y");
 
@@ -75,6 +51,28 @@ public class MultipolygonGraph extends Application {
         stage.setScene(scene);
         stage.setTitle("Multipolygon Graph");
         stage.show();
+    }
+
+
+    public static double[][] extrairCoordenadas(String multipolygon) {
+        // Remover a estrutura "MULTIPOLYGON (((" e ")))" e obter apenas as coordenadas
+        String coordenadasStr = multipolygon.replace("MULTIPOLYGON (((", "")
+                                              .replace(")))", "");
+        
+        // Dividir em pares de coordenadas por vírgulas
+        String[] paresCoordenadas = coordenadasStr.split(", ");
+        
+        // Criar a matriz para armazenar os pares (x, y)
+        double[][] matrizCoordenadas = new double[2][paresCoordenadas.length];
+
+        // Preencher a matriz com valores x e y
+        for (int i = 0; i < paresCoordenadas.length; i++) {
+            String[] xy = paresCoordenadas[i].split(" ");
+            matrizCoordenadas[0][i] = Double.parseDouble(xy[0]); // x
+            matrizCoordenadas[1][i] = Double.parseDouble(xy[1]); // y
+        }
+
+        return matrizCoordenadas;
     }
 
     private void addSeriesAndLines(ScatterChart<Number, Number> scatterChart, double[][] coordinates) {
