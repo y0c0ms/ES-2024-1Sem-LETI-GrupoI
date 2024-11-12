@@ -1,31 +1,34 @@
 package com.example;
 
-import java.util.ArrayList;
-import java.io.IOException;
-import java.util.List;
-import java.io.Reader;
-import java.io.FileReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.ParseException;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CSVReader {
     private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle.csv";
     private List<CSVRecord> data;
 
-    //CSVReader constructor
+    // CSVReader constructor
     public CSVReader() {
-        data = new ArrayList<CSVRecord>();
+        data = new ArrayList<>();
     }
 
-
-       //Method that stores de information read in the csv file in the variable data, making it accessible whenever we want to use it without having to read the file again
-       public void readCSV() {
+    // Reads CSV and stores the information in the `data` list
+    public void readCSV() {
         try (Reader reader = new FileReader(csvFilePath);
                 CSVParser csvParser = new CSVParser(reader,
                         CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
 
-            // Adding the read values to the variable data
+            // Adding the read values to the `data` list
             for (CSVRecord csvRecord : csvParser) {
                 data.add(csvRecord);
             }
@@ -33,56 +36,80 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
-    public CSVRecord getRecord(int index){
-        if(index <= 0 || index >= data.size()){
+
+    // Converts CSV data into a list of Property objects
+    public List<Property> createProperties() {
+        List<Property> properties = new ArrayList<>();
+
+        for (CSVRecord record : data) {
+            try {
+                int objectid = Integer.parseInt(record.get("OBJECTID"));
+                double par_id = parseDouble(record.get("PAR_ID"));
+                double par_num = parseDouble(record.get("PAR_NUM"));
+                double shapeArea = parseDouble(record.get("Shape_Area"));
+                double shapeLength = parseDouble(record.get("Shape_Length"));
+                String geometryStr = record.get("geometry");
+                int owner = Integer.parseInt(record.get("OWNER"));
+
+                // Create a Property instance
+                Property property = new Property(objectid, par_id, par_num, shapeArea, shapeLength, geometryStr, owner);
+                properties.add(property);
+
+            } catch (NumberFormatException e) {
+                System.err.println("Error parsing numeric values in CSV: " + e.getMessage());
+            }
+        }
+
+        return properties;
+    }
+
+    // Helper method to replace commas with dots and parse the number
+    private double parseDouble(String value) {
+        // Replace commas with dots
+        String normalizedValue = value.replace(',', '.');
+        return Double.parseDouble(normalizedValue);
+    }
+
+    // Retrieves a record by its row index (for debugging purposes)
+    public CSVRecord getRecord(int index) {
+        if (index < 0 || index >= data.size()) {
             System.err.println("Invalid index");
             return null;
         }
-        return data.get(index-1);
+        return data.get(index);
     }
 
-    public String getPolygon(CSVRecord record){
-        return record.get("geometry");
-    }
-    //getting a record by its id
-    public CSVRecord getRecordByOBJECTID(int objId){
-        if(objId <= 0 || objId >= data.size()){
-            System.out.println("Invalid object id! Id doesn't exist");
-            return null;
+    // Retrieves a record by its OBJECTID
+    public CSVRecord getRecordByOBJECTID(int objId) {
+        for (CSVRecord record : data) {
+            if (Integer.parseInt(record.get("OBJECTID")) == objId) {
+                return record;
+            }
         }
-        return data.get(objId-1);
+        System.out.println("Object ID not found!");
+        return null;
     }
 
-
-    //Debug method used to see if the file is being read correctly
-    public void printCSV(){
+    // Debug method to print CSV contents
+    public void printCSV() {
         try (Reader reader = new FileReader(csvFilePath);
                 CSVParser csvParser = new CSVParser(reader,
                         CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
 
-            // Get the header map
+            // Print headers
             List<String> headers = csvParser.getHeaderNames();
             System.out.println("Headers: " + headers);
 
-            // Outputting the records
+            // Print each record
             for (CSVRecord csvRecord : csvParser) {
-                // Accessing values by the names assigned to each column
-                String objectId = csvRecord.get("OBJECTID");
-                String parId = csvRecord.get("PAR_ID");
-                String parNum = csvRecord.get("PAR_NUM");
-                String shapeLength = csvRecord.get("Shape_Length");
-                String shapeArea = csvRecord.get("Shape_Area");
-                String geometry = csvRecord.get("geometry");
-                String owner = csvRecord.get("OWNER");
- 
                 System.out.println("Record No - " + csvRecord.getRecordNumber());
-                System.out.println("OBJECTID: " + objectId);
-                System.out.println("PAR_ID: " + parId);
-                System.out.println("PAR_NUM: " + parNum);
-                System.out.println("Shape_Length: " + shapeLength);
-                System.out.println("Shape_Area: " + shapeArea);
-                System.out.println("geometry: " + geometry);
-                System.out.println("OWNER: " + owner);
+                System.out.println("OBJECTID: " + csvRecord.get("OBJECTID"));
+                System.out.println("PAR_ID: " + csvRecord.get("PAR_ID"));
+                System.out.println("PAR_NUM: " + csvRecord.get("PAR_NUM"));
+                System.out.println("Shape_Length: " + csvRecord.get("Shape_Length"));
+                System.out.println("Shape_Area: " + csvRecord.get("Shape_Area"));
+                System.out.println("geometry: " + csvRecord.get("geometry"));
+                System.out.println("OWNER: " + csvRecord.get("OWNER"));
                 System.out.println("---------------------------");
             }
         } catch (IOException e) {
@@ -90,18 +117,17 @@ public class CSVReader {
         }
     }
 
-    //main for debugging the class
-    public static void main(String [] args){
+    // Main method for testing/debugging
+    public static void main(String[] args) {
         CSVReader test = new CSVReader();
-        //printCSV() its working
-        //test.printCSV()
-        
-        //teste
-        //readCSB() its working
-        test.readCSV();
 
-        //getRecordByOBJECTID() its working
-        System.out.println(test.getRecordByOBJECTID(1).get("PAR_ID")); //getting the PAR_ID of the object with an id 16999
+        // Read CSV and create Property objects
+        test.readCSV();
+        List<Property> properties = test.createProperties();
+
+        // Example: Print the properties created
+        for (Property property : properties) {
+            System.out.println("Property ID: " + property.getObjectId() + ", Owner: " + property.getOwner());
+        }
     }
- 
 }
