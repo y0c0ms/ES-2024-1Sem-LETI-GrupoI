@@ -1,24 +1,23 @@
 package com.example;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+
 import java.util.List;
 
-public class PropertyMapVisualizer extends Application {
+//Class in tests and just as an addition
+public class PropertyMapVisualizer extends VBox {
+    private VBox layout;
     private Graph graph;
     private double minX, maxX, minY, maxY;
 
-    @Override
-    public void start(Stage primaryStage) {
-        // Load the properties and create the graph
+    public PropertyMapVisualizer(MainApp mainApp) {
         CSVReader csvReader = new CSVReader();
         csvReader.readCSV();
         List<Property> properties = csvReader.createProperties();
@@ -27,21 +26,16 @@ public class PropertyMapVisualizer extends Application {
             graph.addProperty(property);
         }
 
-        // Calculate the bounding box of all coordinates
         calculateBoundingBox(properties);
 
-        // Set up JavaFX Canvas and draw the properties
-        Pane root = new Pane();
-        Canvas canvas = new Canvas(800, 800); // Canvas size
-        root.getChildren().add(canvas);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Canvas canvas = new Canvas(8000000, 8000000);
+        drawMap(canvas.getGraphicsContext2D());
 
-        drawMap(gc);
+        Button backButton = new Button("Back to Main Menu");
+        backButton.setOnAction(event -> mainApp.showMainMenu());
 
-        Scene scene = new Scene(root, 800, 800);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Property Map Visualization");
-        primaryStage.show();
+        layout = new VBox(10, backButton, canvas);
+        layout.setStyle("-fx-padding: 20;");
     }
 
     private void calculateBoundingBox(List<Property> properties) {
@@ -67,9 +61,8 @@ public class PropertyMapVisualizer extends Application {
     }
 
     private void drawMap(GraphicsContext gc) {
-        gc.setFill(Color.LIGHTBLUE);
+        gc.setFill(Color.LIGHTGREEN);
 
-        // Draw each property as a polygon
         for (Property property : graph.getProperties()) {
             if (property.getGeometry() instanceof MultiPolygon) {
                 MultiPolygon multiPolygon = (MultiPolygon) property.getGeometry();
@@ -80,7 +73,6 @@ public class PropertyMapVisualizer extends Application {
             }
         }
 
-        // Draw edges for adjacency
         gc.setStroke(Color.GRAY);
         for (Property property : graph.getProperties()) {
             List<Property> adjacentProperties = graph.getAdjacentProperties(property);
@@ -91,9 +83,6 @@ public class PropertyMapVisualizer extends Application {
     }
 
     private void drawPolygon(GraphicsContext gc, Polygon polygon) {
-        gc.setFill(Color.LIGHTGREEN);
-
-        // Scale and convert coordinates to screen points
         Coordinate[] coords = polygon.getCoordinates();
         double[] xPoints = new double[coords.length];
         double[] yPoints = new double[coords.length];
@@ -103,12 +92,10 @@ public class PropertyMapVisualizer extends Application {
             yPoints[i] = scaleY(coords[i].y);
         }
 
-        // Draw the polygon
         gc.fillPolygon(xPoints, yPoints, coords.length);
     }
 
     private void drawEdge(GraphicsContext gc, Property p1, Property p2) {
-        // Draw a line between centroids of two adjacent polygons
         double[] p1Centroid = getCentroid(p1);
         double[] p2Centroid = getCentroid(p2);
         gc.strokeLine(p1Centroid[0], p1Centroid[1], p2Centroid[0], p2Centroid[1]);
@@ -120,16 +107,16 @@ public class PropertyMapVisualizer extends Application {
     }
 
     private double scaleX(double x) {
-        double canvasWidth = 800;
+        double canvasWidth = 8000000;
         return ((x - minX) / (maxX - minX)) * canvasWidth;
     }
 
     private double scaleY(double y) {
-        double canvasHeight = 800;
+        double canvasHeight = 8000000;
         return canvasHeight - ((y - minY) / (maxY - minY)) * canvasHeight;
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public VBox getLayout() {
+        return layout;
     }
 }

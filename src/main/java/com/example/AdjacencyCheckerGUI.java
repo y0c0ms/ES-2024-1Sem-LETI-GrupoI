@@ -1,29 +1,25 @@
 package com.example;
 
-import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-public class AdjacencyCheckerGUI extends Application {
+public class AdjacencyCheckerGUI extends VBox {
     private List<Property> properties;
+    private VBox layout;
 
-    @Override
-    public void start(Stage primaryStage) {
-        // Load the properties data
+    public AdjacencyCheckerGUI() {
+        // Initialize properties data
         CSVReader csvReader = new CSVReader();
         csvReader.readCSV();
         properties = csvReader.createProperties();
 
         // Set up the GUI components
-        primaryStage.setTitle("Property Adjacency Checker");
-
         Label label1 = new Label("Enter OBJECTID 1:");
         TextField objectIdField1 = new TextField();
 
@@ -60,9 +56,8 @@ public class AdjacencyCheckerGUI extends Application {
         grid.add(checkButton, 1, 2);
         grid.add(resultLabel, 1, 3);
 
-        Scene scene = new Scene(grid, 400, 200);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        layout = new VBox(10, grid);
+        layout.setPadding(new Insets(20));
     }
 
     // Method to check adjacency based on OBJECTIDs
@@ -91,7 +86,8 @@ public class AdjacencyCheckerGUI extends Application {
         }
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    // Getter method to access the layout
+    public VBox getLayout() {
+        return layout;
     }
 }
