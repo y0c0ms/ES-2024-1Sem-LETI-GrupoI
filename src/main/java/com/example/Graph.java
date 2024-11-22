@@ -2,8 +2,10 @@ package com.example;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Graph {
     private List<Property> properties;
@@ -29,6 +31,31 @@ public class Graph {
     private void addEdge(Property p1, Property p2) {
         adjacencyList.get(p1).add(p2);
         adjacencyList.get(p2).add(p1); // Ensure the edge is bidirectional
+    }
+
+    public List<List<Property>> findOwnerGroups() {
+        List<List<Property>> ownerGroups = new ArrayList<>();
+        Set<Property> visited = new HashSet<>();
+
+        for (Property property : adjacencyList.keySet()) {
+            if (!visited.contains(property)) {
+                List<Property> group = new ArrayList<>();
+                dfs(property, visited, group);
+                ownerGroups.add(group);
+            }
+        }
+        return ownerGroups;
+    }
+
+    private void dfs(Property property, Set<Property> visited, List<Property> group) {
+        visited.add(property);
+        group.add(property);
+
+        for (Property neighbor : getAdjacentProperties(property)) {
+            if (!visited.contains(neighbor) && neighbor.getOwner() == property.getOwner()) {
+                dfs(neighbor, visited, group);
+            }
+        }
     }
 
     // Method to retrieve adjacent properties

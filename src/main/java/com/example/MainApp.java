@@ -1,41 +1,46 @@
 package com.example;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+import java.util.List;
 
 public class MainApp extends Application {
     private Scene mainScene;
     private VBox mainMenu;
 
+    private List<Property> properties;
+    private AreaCalculator areaCalculator;
+
     @Override
     public void start(Stage primaryStage) {
-        // Project name label
-        Label projectNameLabel = new Label("ES-2024-1Sem-LETI-GrupoI");
-        projectNameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        projectNameLabel.setTextFill(Color.BLACK);
+        CSVReader csvReader = new CSVReader();
+        csvReader.readCSV();
+        properties = csvReader.createProperties();
+        areaCalculator = new AreaCalculator(properties);
 
-        // Create buttons for main menu
         Button btnAdjacencyChecker = new Button("Open Adjacency Checker");
         Button btnMapVisualizer = new Button("Open Map Visualizer");
+        Button btnCalculateArea = new Button("Calcular área região");
 
-        // Set actions for buttons
         btnAdjacencyChecker.setOnAction(event -> openAdjacencyChecker());
-        btnMapVisualizer.setOnAction(event -> showUnavailableMessage());
+        btnMapVisualizer.setOnAction(event -> openMapVisualizer());
+        btnCalculateArea.setOnAction(event -> openRegionSelector(primaryStage));
 
-        // Main menu layout
-        mainMenu = new VBox(10, projectNameLabel, btnAdjacencyChecker, btnMapVisualizer);
-        mainMenu.setStyle("-fx-padding: 20;");
-        mainMenu.setAlignment(Pos.CENTER); // Align the project name label and menu to the top-left
+        mainMenu = new VBox(10, btnAdjacencyChecker, btnMapVisualizer, btnCalculateArea);
+        mainMenu.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
-        // Set up the scene
         mainScene = new Scene(mainMenu, 400, 300);
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("Property Visualization App");
@@ -49,6 +54,87 @@ public class MainApp extends Application {
 
         VBox layoutWithBackButton = new VBox(backButton, adjacencyChecker.getLayout());
         mainScene.setRoot(layoutWithBackButton);
+    }
+
+    private void openMapVisualizer() {
+        PropertyMapVisualizer mapVisualizer = new PropertyMapVisualizer(this);
+        Button backButton = new Button("Back to Main Menu");
+        backButton.setOnAction(event -> showMainMenu());
+
+        VBox layoutWithBackButton = new VBox(backButton, mapVisualizer.getLayout());
+        mainScene.setRoot(layoutWithBackButton);
+    }
+
+    private void openRegionSelector(Stage stage) {
+        Button btnFreguesia = new Button("Freguesia");
+        Button btnConcelho = new Button("Cconcelho");
+        Button btnDistrito = new Button("Distrito");
+        Button backButton = new Button("Back to Main Menu");
+
+        btnFreguesia.setOnAction(event -> openRegionButtons("Freguesia", stage));
+        btnConcelho.setOnAction(event -> openRegionButtons("Concelho", stage));
+        btnDistrito.setOnAction(event -> openRegionButtons("Distrito", stage));
+        backButton.setOnAction(event -> showMainMenu());
+
+        VBox regionMenu = new VBox(10, btnFreguesia, btnConcelho, btnDistrito, backButton);
+        regionMenu.setPadding(new Insets(20));
+        regionMenu.setStyle("-fx-alignment: center;");
+        mainScene.setRoot(regionMenu);
+    }
+
+    private void openRegionButtons(String type, Stage stage) {
+        List<String> uniqueRegions = areaCalculator.getUniqueRegions(type);
+
+        VBox regionButtons = new VBox(10);
+        regionButtons.setPadding(new Insets(20));
+
+        Label titleLabel = new Label("Select a " + type + ":");
+        regionButtons.getChildren().add(titleLabel);
+
+        // Add a checkbox or toggle for "Group by Owner"
+        Label groupByOwnerLabel = new Label("Consider adjacent properties with the same owner?");
+        CheckBox groupByOwnerCheckbox = new CheckBox();
+        groupByOwnerCheckbox.setSelected(false);
+
+        regionButtons.getChildren().addAll(groupByOwnerLabel, groupByOwnerCheckbox);
+
+        for (String region : uniqueRegions) {
+            Button regionButton = new Button(region);
+            regionButton.setOnAction(event -> {
+                boolean groupByOwner = groupByOwnerCheckbox.isSelected();
+                showAverageArea(type, region, stage, groupByOwner);
+            });
+            regionButtons.getChildren().add(regionButton);
+        }
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(event -> openRegionSelector(stage));
+        regionButtons.getChildren().add(backButton);
+
+        // Wrap the VBox in a ScrollPane for scrolling functionality
+        ScrollPane scrollPane = new ScrollPane(regionButtons);
+        scrollPane.setFitToWidth(true); // Makes the scroll pane width match the buttons
+        scrollPane.setPadding(new Insets(10));
+
+        mainScene.setRoot(scrollPane);
+    }
+
+    private void showAverageArea(String type, String region, Stage stage, boolean groupByOwner) {
+        double averageArea;
+        if (groupByOwner) {
+            averageArea = areaCalculator.calculateAverageAreaWithGroups(type, region);
+        } else {
+            averageArea = areaCalculator.calculateAverageArea(type, region);
+        }
+
+        Label resultLabel = new Label("Average Area for " + type + " \"" + region + "\": " + averageArea);
+        Button backButton = new Button("Back");
+        backButton.setOnAction(event -> openRegionButtons(type, stage));
+
+        VBox resultLayout = new VBox(10, resultLabel, backButton);
+        resultLayout.setPadding(new Insets(20));
+        resultLayout.setStyle("-fx-alignment: center;");
+        mainScene.setRoot(resultLayout);
     }
 
     private void showUnavailableMessage() {
@@ -69,7 +155,6 @@ public class MainApp extends Application {
         mainScene.setRoot(unavailableLayout);
     }
 
-    // Method to return to the main menu
     public void showMainMenu() {
         mainScene.setRoot(mainMenu);
     }

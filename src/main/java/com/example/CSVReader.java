@@ -3,9 +3,6 @@ package com.example;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.io.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CSVReader {
-    private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle.csv";
+    private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle-1.1.csv";
     private List<CSVRecord> data;
 
     // CSVReader constructor
@@ -50,9 +47,13 @@ public class CSVReader {
                 double shapeLength = parseDouble(record.get("Shape_Length"));
                 String geometryStr = record.get("geometry");
                 int owner = Integer.parseInt(record.get("OWNER"));
+                String freguesia = record.get("Freguesia");
+                String municipio = record.get("Municipio");
+                String ilha = record.get("Ilha");
 
                 // Create a Property instance
-                Property property = new Property(objectid, par_id, par_num, shapeArea, shapeLength, geometryStr, owner);
+                Property property = new Property(objectid, par_id, par_num, shapeArea, shapeLength, geometryStr, owner,
+                        freguesia, municipio, ilha);
                 properties.add(property);
 
             } catch (NumberFormatException e) {
@@ -110,6 +111,9 @@ public class CSVReader {
                 System.out.println("Shape_Area: " + csvRecord.get("Shape_Area"));
                 System.out.println("geometry: " + csvRecord.get("geometry"));
                 System.out.println("OWNER: " + csvRecord.get("OWNER"));
+                System.out.println("Freguesia: " + csvRecord.get("Freguesia"));
+                System.out.println("Municipio: " + csvRecord.get("Municipio"));
+                System.out.println("Ilha: " + csvRecord.get("Ilha"));
                 System.out.println("---------------------------");
             }
         } catch (IOException e) {
@@ -125,31 +129,9 @@ public class CSVReader {
         // Create the list of Property objects
         List<Property> properties = csvReader.createProperties();
 
-        // Define two OBJECTIDs for testing adjacency
-        int objectId1 = 3; // Replace with actual OBJECTID
-        int objectId2 = 121; // Replace with actual OBJECTID
-
-        // Retrieve the Property objects for the specified OBJECTIDs
-        Property property1 = null;
-        Property property2 = null;
-
+        // Print all loaded properties
         for (Property property : properties) {
-            if (property.getObjectId() == objectId1) {
-                property1 = property;
-            } else if (property.getObjectId() == objectId2) {
-                property2 = property;
-            }
-            if (property1 != null && property2 != null) {
-                break;
-            }
-        }
-
-        // Check if the properties are adjacent
-        if (property1.getGeometry() != null && property2.getGeometry() != null) {
-            boolean areAdjacent = property1.isAdjacent(property2);
-            System.out.println("Are properties " + objectId1 + " and " + objectId2 + " adjacent? " + areAdjacent);
-        } else {
-            System.out.println("One or both properties do not have valid geometries.");
+            System.out.println(property);
         }
     }
 }
