@@ -27,9 +27,9 @@ Madeira, que pode ser usado como fonte de dados para a aplicação a desenvolver
 representam as propriedades e as arestas representam as relações de adjacência entre os nós (entre as propriedades);
 3) Permita calcular a área média das propriedades, de uma área geográfica/administrativa indicada pelo utilizador
 (freguesia, concelho, distrito);
-
 4) Permita calcular a área média das propriedades, assumindo que propriedades adjacentes, do mesmo proprietário,
 devem ser consideradas como uma única propriedade, para uma área geográfica/administrativa indicada pelo utilizador;
+
 5) Permita representar sob a forma de um grafo (estrutura de dados) a relação de vizinhança entre proprietários, onde
 os nós representam os proprietários e as arestas representam as relações de vizinhança entre os nós (entre os
 proprietários). Considera-se que um proprietário é vizinho de outro proprietário se os mesmos possuírem propriedades
