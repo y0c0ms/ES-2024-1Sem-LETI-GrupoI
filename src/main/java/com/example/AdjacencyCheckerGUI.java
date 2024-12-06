@@ -30,7 +30,7 @@ public class AdjacencyCheckerGUI extends VBox {
         Label resultLabel = new Label();
 
         // Action when the check button is clicked
-        checkButton.setOnAction(event -> {
+        checkButton.setOnAction(_ -> {
             String idText1 = objectIdField1.getText();
             String idText2 = objectIdField2.getText();
             try {

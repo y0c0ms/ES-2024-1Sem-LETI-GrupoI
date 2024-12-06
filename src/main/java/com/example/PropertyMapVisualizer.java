@@ -32,7 +32,7 @@ public class PropertyMapVisualizer extends VBox {
         drawMap(canvas.getGraphicsContext2D());
 
         Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(event -> mainApp.showMainMenu());
+        backButton.setOnAction(_ -> mainApp.showMainMenu());
 
         layout = new VBox(10, backButton, canvas);
         layout.setStyle("-fx-padding: 20;");

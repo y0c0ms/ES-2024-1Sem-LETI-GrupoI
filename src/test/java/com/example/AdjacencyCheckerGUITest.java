@@ -20,8 +20,8 @@ public class AdjacencyCheckerGUITest {
             Geometry geometry1 = new WKTReader().read("MULTIPOLYGON (((0 0, 1 0, 1 1, 0 1, 0 0)))");
             Geometry geometry2 = new WKTReader().read("MULTIPOLYGON (((1 1, 2 1, 2 2, 1 2, 1 1)))");
 
-            property1 = new Property(1, 123, 456, 100, 100, geometry1.toText(), 1);
-            property2 = new Property(2, 789, 101, 200, 200, geometry2.toText(), 2);
+            property1 = new Property(1, 123.0, 456.0, 100.0, 100.0, geometry1.toText(), 1,"a", "b", "c");
+            property2 = new Property(2, 789.0, 101.0, 200.0, 200.0, geometry2.toText(), 2,"a", "b", "c");
 
         } catch (Exception e) {
             fail("Failed to set up properties.");
@@ -39,9 +39,9 @@ public class AdjacencyCheckerGUITest {
     @Test
     public void testNonAdjacency() {
         Property isolatedProperty = new Property(3, 999, 888, 150, 150, "MULTIPOLYGON (((5 5, 6 5, 6 6, 5 6, 5 5)))",
-                3);
+                3,"a", "b", "c");
         graph.addProperty(isolatedProperty);
 
-        assertFalse(graph.getAdjacentProperties(property1).contains(isolatedProperty));
+        assertFalse(graph.getAdjacentProperties(property1).contains(isolatedProperty), "Properties should not be adjacent");
     }
 }

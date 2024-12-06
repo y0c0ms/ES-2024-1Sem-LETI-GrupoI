@@ -2,16 +2,16 @@ package com.example;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+//import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+/* import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.FontWeight; */
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -34,9 +34,9 @@ public class MainApp extends Application {
         Button btnMapVisualizer = new Button("Open Map Visualizer");
         Button btnCalculateArea = new Button("Calcular área região");
 
-        btnAdjacencyChecker.setOnAction(event -> openAdjacencyChecker());
-        btnMapVisualizer.setOnAction(event -> openMapVisualizer());
-        btnCalculateArea.setOnAction(event -> openRegionSelector(primaryStage));
+        btnAdjacencyChecker.setOnAction(_ -> openAdjacencyChecker());
+        btnMapVisualizer.setOnAction(_ -> openMapVisualizer());
+        btnCalculateArea.setOnAction(_ -> openRegionSelector(primaryStage));
 
         mainMenu = new VBox(10, btnAdjacencyChecker, btnMapVisualizer, btnCalculateArea);
         mainMenu.setStyle("-fx-padding: 20; -fx-alignment: center;");
@@ -50,7 +50,7 @@ public class MainApp extends Application {
     private void openAdjacencyChecker() {
         AdjacencyCheckerGUI adjacencyChecker = new AdjacencyCheckerGUI();
         Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(event -> showMainMenu());
+        backButton.setOnAction(_ -> showMainMenu());
 
         VBox layoutWithBackButton = new VBox(backButton, adjacencyChecker.getLayout());
         mainScene.setRoot(layoutWithBackButton);
@@ -59,7 +59,7 @@ public class MainApp extends Application {
     private void openMapVisualizer() {
         PropertyMapVisualizer mapVisualizer = new PropertyMapVisualizer(this);
         Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(event -> showMainMenu());
+        backButton.setOnAction(_ -> showMainMenu());
 
         VBox layoutWithBackButton = new VBox(backButton, mapVisualizer.getLayout());
         mainScene.setRoot(layoutWithBackButton);
@@ -71,10 +71,10 @@ public class MainApp extends Application {
         Button btnDistrito = new Button("Distrito");
         Button backButton = new Button("Back to Main Menu");
 
-        btnFreguesia.setOnAction(event -> openRegionButtons("Freguesia", stage));
-        btnConcelho.setOnAction(event -> openRegionButtons("Concelho", stage));
-        btnDistrito.setOnAction(event -> openRegionButtons("Distrito", stage));
-        backButton.setOnAction(event -> showMainMenu());
+        btnFreguesia.setOnAction(_ -> openRegionButtons("Freguesia", stage));
+        btnConcelho.setOnAction(_ -> openRegionButtons("Concelho", stage));
+        btnDistrito.setOnAction(_ -> openRegionButtons("Distrito", stage));
+        backButton.setOnAction(_ -> showMainMenu());
 
         VBox regionMenu = new VBox(10, btnFreguesia, btnConcelho, btnDistrito, backButton);
         regionMenu.setPadding(new Insets(20));
@@ -100,7 +100,7 @@ public class MainApp extends Application {
 
         for (String region : uniqueRegions) {
             Button regionButton = new Button(region);
-            regionButton.setOnAction(event -> {
+            regionButton.setOnAction(_ -> {
                 boolean groupByOwner = groupByOwnerCheckbox.isSelected();
                 showAverageArea(type, region, stage, groupByOwner);
             });
@@ -108,7 +108,7 @@ public class MainApp extends Application {
         }
 
         Button backButton = new Button("Back");
-        backButton.setOnAction(event -> openRegionSelector(stage));
+        backButton.setOnAction(_ -> openRegionSelector(stage));
         regionButtons.getChildren().add(backButton);
 
         // Wrap the VBox in a ScrollPane for scrolling functionality
@@ -129,7 +129,7 @@ public class MainApp extends Application {
 
         Label resultLabel = new Label("Average Area for " + type + " \"" + region + "\": " + averageArea);
         Button backButton = new Button("Back");
-        backButton.setOnAction(event -> openRegionButtons(type, stage));
+        backButton.setOnAction(_ -> openRegionButtons(type, stage));
 
         VBox resultLayout = new VBox(10, resultLabel, backButton);
         resultLayout.setPadding(new Insets(20));
@@ -137,7 +137,7 @@ public class MainApp extends Application {
         mainScene.setRoot(resultLayout);
     }
 
-    private void showUnavailableMessage() {
+   /*  private void showUnavailableMessage() {
         // Create a label to show the "feature unavailable" message
         Label unavailableLabel = new Label("This feature is currently not available.");
         unavailableLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
@@ -145,7 +145,7 @@ public class MainApp extends Application {
 
         // Back button to return to the main menu
         Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(event -> showMainMenu());
+        backButton.setOnAction(_ -> showMainMenu());
 
         VBox unavailableLayout = new VBox(20, unavailableLabel, backButton);
         unavailableLayout.setAlignment(Pos.CENTER);
@@ -153,7 +153,7 @@ public class MainApp extends Application {
 
         // Set the new layout with the message as the root of the scene
         mainScene.setRoot(unavailableLayout);
-    }
+    } */
 
     public void showMainMenu() {
         mainScene.setRoot(mainMenu);

@@ -3,7 +3,6 @@ package com.example;
 import java.util.List;
 import java.util.Map;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 public class GraphOwners {
@@ -40,11 +39,4 @@ public class GraphOwners {
         return ownerGraph;
     }
 
-    public static void main(String [] args){
-        CSVReader r = new CSVReader();
-        r.readCSV();
-        GraphOwners go = new GraphOwners(r.createProperties(), r.getOwnersList());
-        
-        
-    }
 }

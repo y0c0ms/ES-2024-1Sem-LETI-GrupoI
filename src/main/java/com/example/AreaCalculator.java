@@ -60,8 +60,7 @@ public class AreaCalculator {
 
     /**
      * Calculates the average area of properties, treating adjacent properties with
-     * the same owner
-     * as a single property.
+     * the same owner as a single property.
      *
      * @param regionType The type of the region ("Freguesia", "Concelho",
      *                   "Distrito").
@@ -159,4 +158,18 @@ public class AreaCalculator {
         }
     }
 
+    public static void main(String [] args){
+        CSVReader r = new CSVReader();
+        r.readCSV();
+        List<Property> l = r.createProperties();
+        AreaCalculator c = new AreaCalculator(l);
+        List<Set<Property>> list = c.groupAdjacentPropertiesByOwner(l);
+        for(Set<Property> set: list){
+            for(Property p: set){
+                System.out.println("Owner: " + p.getOwner() + " pId: " + p.getObjectId());
+            }
+            System.out.println("-------------------");
+        }
+
+    }
 }

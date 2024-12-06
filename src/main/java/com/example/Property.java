@@ -1,13 +1,6 @@
 package com.example;
 
-import java.util.HashSet;
-import java.util.Set;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 
 public class Property {
     private int objectid;
