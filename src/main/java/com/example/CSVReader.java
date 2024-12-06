@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 
 public class CSVReader {
     private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle-1.1.csv";
@@ -36,6 +38,10 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
+
+    /* public Graph<Integer, DefaultEdge> createOwnerGraph(){
+
+    } */
 
     // Converts CSV data into a list of Property objects
     public List<Property> createProperties() {
