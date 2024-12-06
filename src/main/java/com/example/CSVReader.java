@@ -8,15 +8,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CSVReader {
     private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle-1.1.csv";
     private List<CSVRecord> data;
-
+    private Map<Integer, List<Property>> ownersPropertyList;
     // CSVReader constructor
     public CSVReader() {
         data = new ArrayList<>();
+        ownersPropertyList = new HashMap<>();
     }
 
     // Reads CSV and stores the information in the `data` list
@@ -55,6 +58,13 @@ public class CSVReader {
                 Property property = new Property(objectid, par_id, par_num, shapeArea, shapeLength, geometryStr, owner,
                         freguesia, municipio, ilha);
                 properties.add(property);
+                if(!ownersPropertyList.containsKey(property.getOwner())){
+                    List<Property> list = new ArrayList<>();
+                    list.add(property);
+                    ownersPropertyList.put(property.getOwner(), list);
+                }else{
+                    ownersPropertyList.get(property.getOwner()).add(property);
+                }
 
             } catch (NumberFormatException e) {
                 System.err.println("Error parsing numeric values in CSV: " + e.getMessage());
@@ -78,6 +88,10 @@ public class CSVReader {
             return null;
         }
         return data.get(index);
+    }
+
+    public Map<Integer, List<Property>> getOwnersList(){
+        return ownersPropertyList;
     }
 
     // Retrieves a record by its OBJECTID
