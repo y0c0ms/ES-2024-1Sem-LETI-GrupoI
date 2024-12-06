@@ -5,6 +5,7 @@ import java.util.Map;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 public class GraphOwners {
     private List<Property> allProperties;
     private Map<Integer, List<Property>> ownersPropertyList;
@@ -13,7 +14,7 @@ public class GraphOwners {
     public GraphOwners(List<Property> allProperties, Map<Integer, List<Property>> ownersPropertyList) {
         this.allProperties = allProperties;
         this.ownersPropertyList = ownersPropertyList;
-        this.ownerGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        this.ownerGraph = new SimpleGraph<>(DefaultEdge.class);
         initializeOwnerGraph();
     }
 
