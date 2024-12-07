@@ -26,6 +26,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         CSVReader csvReader = new CSVReader();
+        csvReader.chooseCSVFile();
         csvReader.readCSV();
         properties = csvReader.createProperties();
         areaCalculator = new AreaCalculator(properties);
@@ -137,23 +138,26 @@ public class MainApp extends Application {
         mainScene.setRoot(resultLayout);
     }
 
-   /*  private void showUnavailableMessage() {
-        // Create a label to show the "feature unavailable" message
-        Label unavailableLabel = new Label("This feature is currently not available.");
-        unavailableLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
-        unavailableLabel.setTextFill(Color.RED);
-
-        // Back button to return to the main menu
-        Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(_ -> showMainMenu());
-
-        VBox unavailableLayout = new VBox(20, unavailableLabel, backButton);
-        unavailableLayout.setAlignment(Pos.CENTER);
-        unavailableLayout.setStyle("-fx-padding: 20;");
-
-        // Set the new layout with the message as the root of the scene
-        mainScene.setRoot(unavailableLayout);
-    } */
+    /*
+     * private void showUnavailableMessage() {
+     * // Create a label to show the "feature unavailable" message
+     * Label unavailableLabel = new
+     * Label("This feature is currently not available.");
+     * unavailableLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+     * unavailableLabel.setTextFill(Color.RED);
+     * 
+     * // Back button to return to the main menu
+     * Button backButton = new Button("Back to Main Menu");
+     * backButton.setOnAction(_ -> showMainMenu());
+     * 
+     * VBox unavailableLayout = new VBox(20, unavailableLabel, backButton);
+     * unavailableLayout.setAlignment(Pos.CENTER);
+     * unavailableLayout.setStyle("-fx-padding: 20;");
+     * 
+     * // Set the new layout with the message as the root of the scene
+     * mainScene.setRoot(unavailableLayout);
+     * }
+     */
 
     public void showMainMenu() {
         mainScene.setRoot(mainMenu);

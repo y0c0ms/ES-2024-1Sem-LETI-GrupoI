@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.CSVReaderTest" time="1.25" tests="3" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.GraphOwnersTest" time="0.01" tests="2" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="23"/>
     <property name="maven.user.extensions" value="C:\Users\Utilizador/.m2/extensions.xml"/>
@@ -70,16 +70,6 @@
     <property name="maven.user.settings" value="C:\Users\Utilizador/.m2/settings.xml"/>
     <property name="java.class.version" value="67.0"/>
   </properties>
-  <testcase name="testGetRecordByOBJECTID" classname="com.example.CSVReaderTest" time="0.277"/>
-  <testcase name="testInvalidOBJECTID" classname="com.example.CSVReaderTest" time="0.26">
-    <system-out><![CDATA[Object ID not found!
-]]></system-out>
-  </testcase>
-  <testcase name="testReadCSV" classname="com.example.CSVReaderTest" time="0.709">
-    <system-err><![CDATA[Warning: Property with OBJECTID 18745 has an empty or invalid MULTIPOLYGON.
-Warning: Property with OBJECTID 18745 has no valid geometry.
-Warning: Property with OBJECTID 32353 has an empty or invalid MULTIPOLYGON.
-Warning: Property with OBJECTID 32353 has no valid geometry.
-]]></system-err>
-  </testcase>
+  <testcase name="testGraph" classname="com.example.GraphOwnersTest" time="0.007"/>
+  <testcase name="testNeighborsOfVertex" classname="com.example.GraphOwnersTest" time="0.001"/>
 </testsuite>

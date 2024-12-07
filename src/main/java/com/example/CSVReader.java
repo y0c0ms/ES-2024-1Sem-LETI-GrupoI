@@ -4,6 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -12,9 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFileChooser;
+
 /**
- * This class provides functionality for reading and processing data from a CSV file.
- * It parses the CSV data and organizes it into a list of Property objects and a map
+ * This class provides functionality for reading and processing data from a CSV
+ * file.
+ * It parses the CSV data and organizes it into a list of Property objects and a
+ * map
  * that associates owners with their respective properties.
  */
 public class CSVReader {
@@ -31,14 +36,29 @@ public class CSVReader {
         ownersPropertyList = new HashMap<>();
     }
 
+    public void chooseCSVFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select CSV File");
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            csvFilePath = selectedFile.getAbsolutePath();
+        }
+    }
+
     /**
      * Reads the CSV file and stores the records in the data list.
      * Uses Apache Commons CSV to parse the file.
      */
     public void readCSV() {
+        if (csvFilePath == null || csvFilePath.isEmpty()) {
+            System.out.println("CSV file path is not set. Please choose a CSV file first.");
+            return;
+        }
+
         try (Reader reader = new FileReader(csvFilePath);
-             CSVParser csvParser = new CSVParser(reader,
-                     CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
+                CSVParser csvParser = new CSVParser(reader,
+                        CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
 
             // Adding the read values to the `data` list
             for (CSVRecord csvRecord : csvParser) {
@@ -51,6 +71,7 @@ public class CSVReader {
 
     /**
      * Converts the CSV data into a list of Property objects.
+     * 
      * @return A list of Property objects created from the CSV data.
      */
     public List<Property> createProperties() {
@@ -73,7 +94,7 @@ public class CSVReader {
                 Property property = new Property(objectid, par_id, par_num, shapeArea, shapeLength, geometryStr, owner,
                         freguesia, municipio, ilha);
                 properties.add(property);
-                
+
                 // Populate ownersPropertyList map
                 if (!ownersPropertyList.containsKey(property.getOwner())) {
                     List<Property> list = new ArrayList<>();
@@ -93,6 +114,7 @@ public class CSVReader {
 
     /**
      * Helper method to replace commas with dots and parse a string as a double.
+     * 
      * @param value The string value to be parsed.
      * @return The parsed double value.
      */
@@ -103,8 +125,10 @@ public class CSVReader {
 
     /**
      * Retrieves a record by its row index.
+     * 
      * @param index The index of the record to retrieve.
-     * @return The CSVRecord at the specified index, or null if the index is invalid.
+     * @return The CSVRecord at the specified index, or null if the index is
+     *         invalid.
      */
     public CSVRecord getRecord(int index) {
         if (index < 0 || index >= data.size()) {
@@ -116,7 +140,9 @@ public class CSVReader {
 
     /**
      * Retrieves the map of owners and their associated properties.
-     * @return A map where keys are owner IDs and values are lists of properties owned by them.
+     * 
+     * @return A map where keys are owner IDs and values are lists of properties
+     *         owned by them.
      */
     public Map<Integer, List<Property>> getOwnersList() {
         return ownersPropertyList;
@@ -124,6 +150,7 @@ public class CSVReader {
 
     /**
      * Retrieves a record by its OBJECTID.
+     * 
      * @param objId The OBJECTID of the record to retrieve.
      * @return The CSVRecord with the specified OBJECTID, or null if not found.
      */
@@ -142,8 +169,8 @@ public class CSVReader {
      */
     public void printCSV() {
         try (Reader reader = new FileReader(csvFilePath);
-             CSVParser csvParser = new CSVParser(reader,
-                     CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
+                CSVParser csvParser = new CSVParser(reader,
+                        CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
 
             // Print headers
             List<String> headers = csvParser.getHeaderNames();
@@ -171,6 +198,7 @@ public class CSVReader {
 
     /**
      * Main method for testing the CSVReader class.
+     * 
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
