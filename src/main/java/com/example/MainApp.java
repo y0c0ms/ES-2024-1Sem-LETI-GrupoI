@@ -245,13 +245,13 @@ public class MainApp extends Application {
                 List<SuggestedExchange> suggestions = PropertyExchange.generateSwapSuggestions(filteredProperties);
     
                 StringBuilder resultText = new StringBuilder();
-                resultText.append("Initial average area per owner: ").append(a.calculateAverageArea("Concelho", selectedConcelho))
+                resultText.append("Initial average area per owner: ").append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho))
                           .append("\n");
     
                 PropertyExchange.applySwaps(filteredProperties, suggestions);
                 a= new AreaCalculator(filteredProperties);
                 resultText.append("New average area per owner after exchanges: ")
-                          .append(a.calculateAverageArea("Concelho", selectedConcelho)).append("\n\n");
+                          .append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho)).append("\n\n");
                 resultText.append("Sample exchanges:\n");
                 for (int i = 0; i < 5 && i < suggestions.size(); i++) {
                     SuggestedExchange exchange = suggestions.get(i);
