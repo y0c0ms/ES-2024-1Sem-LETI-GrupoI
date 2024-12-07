@@ -5,7 +5,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -16,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.Graph;
@@ -50,10 +48,14 @@ public class MainApp extends Application {
 
         // Load the background image
         Image backgroundImage = new Image(getClass().getResourceAsStream("/images.jpeg"));
-        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-        mainMenu.setBackground(new Background(background));
+        if (backgroundImage.isError()) {
+            System.err.println("Error loading background image.");
+        } else {
+            BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+            BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+            mainMenu.setBackground(new Background(background));
+        }
 
         mainScene = new Scene(mainMenu, 400, 300);
         primaryStage.setScene(mainScene);
@@ -164,7 +166,7 @@ public class MainApp extends Application {
 
         showNeighborsButton.setOnAction(event -> {
             try {
-                Integer ownerId = Integer.parseInt(ownerIdInput.getText());
+                int ownerId = Integer.parseInt(ownerIdInput.getText());
                 if (ownerId > maxOwnerId) {
                     errorLabel.setText(
                             "Invalid Owner ID. Please enter a number less than or equal to " + maxOwnerId + ".");

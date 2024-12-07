@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 
@@ -23,9 +25,10 @@ import javax.swing.JFileChooser;
  * that associates owners with their respective properties.
  */
 public class CSVReader {
+    private static final Logger LOGGER = Logger.getLogger(CSVReader.class.getName());
     private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle-1.1.csv";
-    private List<CSVRecord> data;
-    private Map<Integer, List<Property>> ownersPropertyList;
+    private final List<CSVRecord> data;
+    private final Map<Integer, List<Property>> ownersPropertyList;
 
     /**
      * Constructor for the CSVReader class.
@@ -52,7 +55,7 @@ public class CSVReader {
      */
     public void readCSV() {
         if (csvFilePath == null || csvFilePath.isEmpty()) {
-            System.out.println("CSV file path is not set. Please choose a CSV file first.");
+            LOGGER.warning("CSV file path is not set. Please choose a CSV file first.");
             return;
         }
 
@@ -65,7 +68,7 @@ public class CSVReader {
                 data.add(csvRecord);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error reading CSV file", e);
         }
     }
 
@@ -105,7 +108,7 @@ public class CSVReader {
                 }
 
             } catch (NumberFormatException e) {
-                System.err.println("Error parsing numeric values in CSV: " + e.getMessage());
+                LOGGER.log(Level.WARNING, "Error parsing numeric values in CSV", e);
             }
         }
 
@@ -132,7 +135,7 @@ public class CSVReader {
      */
     public CSVRecord getRecord(int index) {
         if (index < 0 || index >= data.size()) {
-            System.err.println("Invalid index");
+            LOGGER.warning("Invalid index");
             return null;
         }
         return data.get(index);
@@ -160,7 +163,7 @@ public class CSVReader {
                 return record;
             }
         }
-        System.out.println("Object ID not found!");
+        LOGGER.info("Object ID not found!");
         return null;
     }
 
@@ -192,7 +195,7 @@ public class CSVReader {
                 System.out.println("---------------------------");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error printing CSV file", e);
         }
     }
 

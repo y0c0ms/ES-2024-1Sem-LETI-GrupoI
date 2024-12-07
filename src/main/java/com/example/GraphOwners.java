@@ -3,7 +3,6 @@ package com.example;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -15,9 +14,9 @@ import org.jgrapht.graph.SimpleGraph;
  * JGraphT's SimpleGraph.
  */
 public class GraphOwners {
-    private List<Property> allProperties;
-    private Map<Integer, List<Property>> ownersPropertyList;
-    private Graph<Integer, DefaultEdge> ownerGraph;
+    private final List<Property> allProperties;
+    private final Map<Integer, List<Property>> ownersPropertyList;
+    private final Graph<Integer, DefaultEdge> ownerGraph;
 
     /**
      * Constructor for the GraphOwners class.
