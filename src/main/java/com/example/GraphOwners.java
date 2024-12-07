@@ -2,13 +2,17 @@ package com.example;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 /**
- * This class represents a graph of property owners, where vertices are owner IDs and edges indicate adjacency
- * between properties owned by different owners. The graph is built using JGraphT's SimpleGraph.
+ * This class represents a graph of property owners, where vertices are owner
+ * IDs and edges indicate adjacency
+ * between properties owned by different owners. The graph is built using
+ * JGraphT's SimpleGraph.
  */
 public class GraphOwners {
     private List<Property> allProperties;
@@ -17,9 +21,12 @@ public class GraphOwners {
 
     /**
      * Constructor for the GraphOwners class.
-     * Initializes the owner graph based on the provided list of properties and owner-property mappings.
-     * @param allProperties A list of all properties.
-     * @param ownersPropertyList A map where keys are owner IDs and values are lists of properties owned by them.
+     * Initializes the owner graph based on the provided list of properties and
+     * owner-property mappings.
+     * 
+     * @param allProperties      A list of all properties.
+     * @param ownersPropertyList A map where keys are owner IDs and values are lists
+     *                           of properties owned by them.
      */
     public GraphOwners(List<Property> allProperties, Map<Integer, List<Property>> ownersPropertyList) {
         this.allProperties = allProperties;
@@ -29,7 +36,8 @@ public class GraphOwners {
     }
 
     /**
-     * Initializes the owner graph by adding vertices for each owner and edges between owners with adjacent properties.
+     * Initializes the owner graph by adding vertices for each owner and edges
+     * between owners with adjacent properties.
      */
     private void initializeOwnerGraph() {
         // Add all owner IDs as vertices in the graph
@@ -53,15 +61,23 @@ public class GraphOwners {
 
     /**
      * Retrieves the owner graph.
-     * @return A graph where vertices represent owner IDs and edges represent adjacency between their properties.
+     * 
+     * @return A graph where vertices represent owner IDs and edges represent
+     *         adjacency between their properties.
      */
     public Graph<Integer, DefaultEdge> getOwnerGraph() {
         return ownerGraph;
     }
 
+    public Set<Integer> getOwnerIds() {
+        return ownersPropertyList.keySet();
+    }
+
     /**
      * Main method for testing the GraphOwners class.
-     * Reads data from a CSV file, builds the owner graph, and prints information about the graph.
+     * Reads data from a CSV file, builds the owner graph, and prints information
+     * about the graph.
+     * 
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
