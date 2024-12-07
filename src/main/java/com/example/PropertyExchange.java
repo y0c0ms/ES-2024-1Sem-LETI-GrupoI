@@ -12,7 +12,6 @@ import java.util.Set;
 public class PropertyExchange {
     private final Map<Integer, List<Property>> ownersPropertyList;
     private final List<Property> properties;
-    private final double potencialOfSwap;
     private double previousAverage;
     private double newAverage;
 
@@ -27,8 +26,8 @@ public class PropertyExchange {
             double potencialOfSwap) {
         this.properties = properties;
         this.ownersPropertyList = ownersPropertyList;
-        this.potencialOfSwap = potencialOfSwap;
-        // this.previousAverage = calculateAverageAreaByOwner();
+        this.previousAverage = calculateAverageAreaByOwner();
+        this.newAverage = calculateNewAverageAreaByOwner(potencialOfSwap);
     }
 
     /**
@@ -135,5 +134,65 @@ public class PropertyExchange {
             owners.add(suggestion.getProperty2().getOwner());
         }
         return owners;
+    }
+
+    /**
+     * Calculates the average area per owner.
+     *
+     * @return The average area per owner.
+     */
+    private double calculateAverageAreaByOwner() {
+        List<Double> ownerAreas = new ArrayList<>();
+        for (int owner : ownersPropertyList.keySet()) {
+            Set<Property> uniqueProperties = new HashSet<>();
+            double totalArea = 0;
+            List<Property> ownerProperties = new ArrayList<>(ownersPropertyList.get(owner));
+
+            for (Property property : ownerProperties) {
+                if (property != null && uniqueProperties.add(property)) {
+                    totalArea += property.getShapeArea();
+                    Set<Property> connectedProperties = findConnectedProperties(property, ownerProperties,
+                            new HashSet<>());
+                    uniqueProperties.addAll(connectedProperties);
+                    totalArea += connectedProperties.stream().mapToDouble(Property::getShapeArea).sum();
+                }
+            }
+
+            if (!uniqueProperties.isEmpty()) {
+                ownerAreas.add(totalArea / uniqueProperties.size());
+            }
+        }
+        return ownerAreas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+    }
+
+    /**
+     * Calculates the new average area per owner after potential swaps.
+     *
+     * @param potencialOfSwap The potential of swap threshold.
+     * @return The new average area per owner.
+     */
+    private double calculateNewAverageAreaByOwner(double potencialOfSwap) {
+        List<SuggestedExchange> suggestions = generateSwapSuggestions(properties, potencialOfSwap);
+        applySwaps(properties, suggestions);
+        return calculateAverageAreaByOwner();
+    }
+
+    /**
+     * Finds connected properties for a given property.
+     *
+     * @param start      The starting property.
+     * @param properties The list of properties.
+     * @param visited    The set of visited properties.
+     * @return A set of connected properties.
+     */
+    private Set<Property> findConnectedProperties(Property start, List<Property> properties, Set<Property> visited) {
+        Set<Property> connectedProperties = new HashSet<>(visited);
+        connectedProperties.add(start);
+        for (Property property : properties) {
+            if (property != null && !connectedProperties.contains(property) && start.isAdjacent(property)) {
+                connectedProperties.addAll(findConnectedProperties(property, properties, connectedProperties));
+            }
+        }
+        return connectedProperties;
     }
 }
