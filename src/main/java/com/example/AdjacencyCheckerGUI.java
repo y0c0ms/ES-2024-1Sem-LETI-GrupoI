@@ -13,6 +13,9 @@ public class AdjacencyCheckerGUI extends VBox {
     private final List<Property> properties;
     private final VBox layout;
 
+    /**
+     * Constructs the AdjacencyCheckerGUI and initializes the properties data.
+     */
     public AdjacencyCheckerGUI() {
         // Initialize properties data
         CSVReader csvReader = new CSVReader();
@@ -60,7 +63,13 @@ public class AdjacencyCheckerGUI extends VBox {
         layout.setPadding(new Insets(20));
     }
 
-    // Method to check adjacency based on OBJECTIDs
+    /**
+     * Checks adjacency between two properties based on their OBJECTIDs.
+     *
+     * @param objectId1 The OBJECTID of the first property.
+     * @param objectId2 The OBJECTID of the second property.
+     * @return True if the properties are adjacent, false otherwise.
+     */
     private boolean checkAdjacency(int objectId1, int objectId2) {
         Property property1 = null;
         Property property2 = null;
@@ -86,7 +95,11 @@ public class AdjacencyCheckerGUI extends VBox {
         }
     }
 
-    // Getter method to access the layout
+    /**
+     * Gets the layout of the AdjacencyCheckerGUI.
+     *
+     * @return The VBox layout of the GUI.
+     */
     public VBox getLayout() {
         return layout;
     }
