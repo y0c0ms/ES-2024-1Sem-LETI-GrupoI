@@ -24,158 +24,93 @@ public class PropertyExchange {
         this.properties = properties;
         this.ownersPropertyList = ownersPropertyList;
         this.potencialOfSwap = potencialOfSwap;
-        this.previousAverage = calculateAverageAreaByOwner();
+        //this.previousAverage = calculateAverageAreaByOwner();
     }
 
-    public List<SuggestedExchange> generateSugestions(String concelho) {
-        List<Property> filteredProperties = properties.stream()
-                .filter(property -> property.getMunicipio().equalsIgnoreCase(concelho))
-                .collect(Collectors.toList());
-
-        List<SuggestedExchange> suggestions = filteredProperties.parallelStream()
-                .filter(property1 -> property1 != null)
-                .flatMap(property1 -> filteredProperties.stream()
-                        .filter(property2 -> property2 != null && property1.getOwner() != property2.getOwner())
-                        .map(property2 -> {
-                            double area1 = property1.getShapeArea();
-                            double area2 = property2.getShapeArea();
-                            double gain = calculateGain(property1, property2);
-                            double probabilityOfTrade = calculateProbabilityOfTrade(area1, area2);
-                            return new SuggestedExchange(property1, property2, gain, probabilityOfTrade);
-                        })
-                        .filter(exchange -> exchange.getProbabilityOfTrade() > potencialOfSwap))
-                .sorted(Comparator.comparingDouble(SuggestedExchange::getGain).reversed()
-                        .thenComparingDouble(SuggestedExchange::getProbabilityOfTrade).reversed())
-                .collect(Collectors.toList());
-
-        return suggestions;
+    public double getPreviousAverage(){
+        return previousAverage;
     }
+   public static List<SuggestedExchange> generateSwapSuggestions(List<Property> properties) {
+       List<SuggestedExchange> suggestions = new ArrayList<>();
 
-    private double calculateGain(Property property1, Property property2) {
-        double initialAverage = calculateAverageAreaByOwner();
-        executeExchange(property1, property2);
-        double newAverage = calculateAverageAreaByOwner();
-        undoExchange(property1, property2);
-        return newAverage - initialAverage;
-    }
+       // Iterate over all pairs of properties
+       for (int i = 0; i < properties.size(); i++) {
+           Property property1 = properties.get(i);
+           for (int j = i + 1; j < properties.size(); j++) {
+               Property property2 = properties.get(j);
 
-    private double calculateProbabilityOfTrade(double area1, double area2) {
-        return 1.0 - Math.abs(area1 - area2) / Math.max(area1, area2);
-    }
+               // Skip pairs with the same owner
+               if (property1.getOwner() == (property2.getOwner())) {
+                   continue;
+               }
 
-    private void executeExchange(Property property1, Property property2) {
-        int owner1 = property1.getOwner();
-        int owner2 = property2.getOwner();
-        ownersPropertyList.get(owner1).remove(property1);
-        ownersPropertyList.get(owner2).remove(property2);
-        ownersPropertyList.get(owner1).add(property2);
-        ownersPropertyList.get(owner2).add(property1);
-    }
+               // Check if property2 is adjacent to any property owned by property1's owner
+               boolean hasAdjacentToOwner = false;
+               for (Property property : properties) {
+                   if (property.getOwner() == (property1.getOwner()) && property.isAdjacent(property2)) {
+                       hasAdjacentToOwner = true;
+                       break;
+                   }
+               }
 
-    private void undoExchange(Property property1, Property property2) {
-        int owner1 = property1.getOwner();
-        int owner2 = property2.getOwner();
-        ownersPropertyList.get(owner1).remove(property2);
-        ownersPropertyList.get(owner2).remove(property1);
-        ownersPropertyList.get(owner1).add(property1);
-        ownersPropertyList.get(owner2).add(property2);
-    }
+               // Skip if no adjacency to the owner
+               if (!hasAdjacentToOwner) {
+                   continue;
+               }
 
-    public double calculateAverageAreaByOwner() {
-        List<Double> ownerAreas = new ArrayList<>();
-        for (int owner : ownersPropertyList.keySet()) {
-            Set<Property> uniqueProperties = new HashSet<>();
-            double totalArea = 0;
-            List<Property> ownerProperties = ownersPropertyList.get(owner);
+               try {
+                   // Calculate swap potential based on the areas of the two properties
+                   double area1 = property1.getShapeArea();
+                   double area2 = property2.getShapeArea();
+                   double maiorArea = Math.max(area1, area2);
+                   double menorArea = Math.min(area1, area2);
+                   double potential = menorArea / maiorArea;
 
-            for (Property property : ownerProperties) {
-                if (property != null && uniqueProperties.add(property)) {
-                    totalArea += property.getShapeArea();
-                    Set<Property> connectedProperties = findConnectedProperties(property, ownerProperties,
-                            new HashSet<>());
-                    uniqueProperties.addAll(connectedProperties);
-                    totalArea += connectedProperties.stream().mapToDouble(Property::getShapeArea).sum();
-                }
-            }
+                   // Add the swap suggestion if the potential meets the threshold (>= 0.75)
+                   if (potential >= 0.75) {
+                       suggestions.add(new SuggestedExchange(property1, property2, area1 - area2,potential));
+                   }
+               } catch (NumberFormatException e) {
+                   // Log error for invalid area values
+                   System.err.println("Invalid area value for properties " + property1.getObjectId() +
+                                      " or " + property2.getObjectId());
+               }
+           }
+       }
 
-            if (!uniqueProperties.isEmpty()) {
-                ownerAreas.add(totalArea / uniqueProperties.size());
-            }
-        }
-        return ownerAreas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-    }
+       // Sort suggestions by potential in descending order
+       suggestions.sort((s1, s2) -> Double.compare(s2.getProbabilityOfTrade(), s1.getProbabilityOfTrade()));
 
-    private Set<Property> findConnectedProperties(Property start, List<Property> properties, Set<Property> visited) {
-        Set<Property> connectedProperties = new HashSet<>(visited);
-        connectedProperties.add(start);
-        for (Property property : properties) {
-            if (property != null && !connectedProperties.contains(property) && start.isAdjacent(property)) {
-                connectedProperties.addAll(findConnectedProperties(property, properties, connectedProperties));
-            }
-        }
-        return connectedProperties;
-    }
+       return suggestions;
+   }
 
-    public void executeExchanges(List<SuggestedExchange> suggestions) {
-        for (SuggestedExchange exchange : suggestions) {
-            executeExchange(exchange.getProperty1(), exchange.getProperty2());
-        }
-        newAverage = calculateAverageAreaByOwner();
-    }
+ 
+   public static void applySwaps(List<Property> properties, List<SuggestedExchange> suggestions) {
+       // Iterate through the list of swap suggestions
+       for (SuggestedExchange suggestion : suggestions) {
+           int newOwner = suggestion.getProperty2().getOwner(); // New owner for property1
+           for (Property property : properties) {
+               // Update the owner of property1 to the owner of property2
+               if (property.getObjectId() == suggestion.getProperty1().getObjectId()) {
+                   property.setOwner(newOwner);
+               }
+           }
+       }
+   }
 
-    public static void main(String[] args) {
-        // Create sample data
-        List<Property> properties = new ArrayList<>();
-        try {
-            Geometry geometry1 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 100, 100 100, 100 0, 0 0)))");
-            Geometry geometry2 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 150, 150 150, 150 0, 0 0)))");
-            Geometry geometry3 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 75, 75 75, 75 0, 0 0)))");
-            Geometry geometry4 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 125, 125 125, 125 0, 0 0)))");
-            Geometry geometry5 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 50, 50 50, 50 0, 0 0)))");
-            properties.add(
-                    new Property(1, 1, 1, 100, 100, geometry1.toString(), 1, "Freguesia1", "Concelho1", "Distrito1"));
-            properties.add(
-                    new Property(2, 2, 2, 150, 150, geometry2.toString(), 1, "Freguesia1", "Concelho1", "Distrito1"));
-            properties.add(
-                    new Property(3, 3, 3, 75, 75, geometry3.toString(), 2, "Freguesia2", "Concelho1", "Distrito1"));
-            properties.add(
-                    new Property(4, 4, 4, 125, 125, geometry4.toString(), 2, "Freguesia3", "Concelho2", "Distrito1"));
-            properties.add(
-                    new Property(5, 5, 5, 50, 50, geometry5.toString(), 3, "Freguesia1", "Concelho1", "Distrito1"));
-        } catch (Exception e) {
-            System.err.println("Error creating sample data.");
-        }
-
-        Map<Integer, List<Property>> ownersPropertyList = new HashMap<>();
-        for (Property property : properties) {
-            ownersPropertyList.computeIfAbsent(property.getOwner(), k -> new ArrayList<>()).add(property);
-        }
-
-        // Initialize PropertyExchange
-        PropertyExchange pe = new PropertyExchange(properties, ownersPropertyList, 0.75);
-
-        // Generate suggestions
-        List<SuggestedExchange> suggestions = pe.generateSugestions("Concelho1");
-
-        // Print initial average
-        System.out.println("Initial average area per owner: " + pe.calculateAverageAreaByOwner());
-
-        // Execute exchanges
-        pe.executeExchanges(suggestions);
-
-        // Print new average
-        System.out.println("New average area per owner after exchanges: " + pe.calculateAverageAreaByOwner());
-
-        // Print some sample exchanges
-        System.out.println("\nSample exchanges:");
-        for (int i = 0; i < 5 && i < suggestions.size(); i++) {
-            SuggestedExchange exchange = suggestions.get(i);
-            System.out.println("Exchange " + (i + 1) + ":");
-            System.out.println("  Property 1: " + exchange.getProperty1().getParNum());
-            System.out.println("  Property 2: " + exchange.getProperty2().getParNum());
-            System.out.println("  Area gained: " + exchange.getGain());
-            System.out.println("  Probability of trade: " + exchange.getProbabilityOfTrade());
-            System.out.println();
-        }
-    }
+   /**
+    * Retrieves the set of owner IDs involved in the swap suggestions.
+    *
+    * @param suggestions The list of PropertySwapSuggestion objects representing potential swaps.
+    * @return A set of owner IDs involved in the swaps.
+    */
+   public static Set<Integer> getInvolvedOwners(List<SuggestedExchange> suggestions) {
+       Set<Integer> owners = new HashSet<>();
+       // Collect unique owner IDs from the suggestions
+       for (SuggestedExchange suggestion : suggestions) {
+           owners.add(suggestion.getProperty1().getOwner());
+           owners.add(suggestion.getProperty2().getOwner());
+       }
+       return owners;
+   }
 }

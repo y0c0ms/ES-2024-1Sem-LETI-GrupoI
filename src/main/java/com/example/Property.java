@@ -15,7 +15,7 @@ public class Property {
     private final double shapeArea;
     private final double shapeLength;
     private final CustomPolygon geometry;
-    private final int owner;
+    private int owner;
     private final String freguesia;
     private final String municipio;
     private final String ilha;
@@ -151,5 +151,9 @@ public class Property {
      */
     public int getOwner() {
         return owner;
+    }
+
+    public void setOwner(int owner){
+        this.owner = owner;
     }
 }
