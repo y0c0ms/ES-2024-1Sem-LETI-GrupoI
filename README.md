@@ -12,14 +12,16 @@
 
 ### Principais Problemas
 - Issue 1: Inicialmente pensávamos que os grafos deveriam ser diagramas pelo que tentamos desenvolver uma classe que faria estes diagramas (sem muito sucesso).
-- Issue 2: Gestão e documentação do código(será corrigido brevemente).
-- Issue 3: O ficheiro CSV providenciado contem um erro de formatação no OBJECTID 9323 que teve que ser editada manualamnete. O programa na sua versão final deverá arranjar alguma forma de eleminar a linha retornando um aviso ou 
--Issue 4: A Gui apresentada é muito básica e serve apenas para a apresentação das funcionalidades inicias.
 
-### Funcionalidades Incompletas
+## Tecnologias Utilizadas
+- **Ambiente de Programação / IDE**: Visual Studio Code (VSCode)
+- **Gestão de Configurações / Controle de Versões no Repositório Local**: SCM Git
+- **Gestão de Configurações / Controle de Versões no Repositório Remoto**: GitHub.com
+- **Gestão de Dependências**: Maven
+- **Avaliação da Qualidade do Software**: Qodana
+- **Testes e Avaliação de Cobertura de Testes**: JUnit
+- **Documentação do Software**: JavaDoc
+- **Gestão do Projeto**: Abordagem Scrum utilizando Trello com Power-Up do GitHub para rastreio entre os cartões das user stories e os eventos respetivos no GitHub (commits, pull requests)
 
-- Funcionalidade opcional: Implementar metodo que assume um objeto e passa a lista das suas propriedades adjacentes.
-- Funcionalidade 1: Permita calcular a área média das propriedades, de uma área geográfica/administrativa indicada pelo utilizador (freguesia, concelho, distrito);
-- Funcionalidade 2: Permita calcular a área média das propriedades, assumindo que propriedades adjacentes, do mesmo proprietário, devem ser consideradas como uma única propriedade, para uma área geográfica/administrativa indicada pelo utilizador;
-- Funcionalidade 3: Permita representar sob a forma de um grafo (estrutura de dados) a relação de vizinhança entre proprietários, onde os nós representam os proprietários e as arestas representam as relações de vizinhança entre os nós (entre os proprietários). Considera-se que um proprietário é vizinho de outro proprietário se os mesmos possuírem propriedades contíguas;
-- Funcionalidade 4: Permita gerar sugestões para troca de propriedades entre proprietários, que maximizem a área média das propriedades por proprietário (área média entendida segundo o cálculo descrito no ponto 4). Na sugestão de trocas, deve ser considerado não só o aumento de área média proporcionado por essa troca, mas também o potencial da troca ser realizada pelos proprietários. Assume-se que os proprietários envolvidos nas trocas têm interesse em incorrer nos custos mínimos possíveis para realizar a transação.
+## Relatório de Avaliação da Qualidade do Software
+O relatório de avaliação da qualidade do software pode ser encontrado [aqui](reports/report.pdf).

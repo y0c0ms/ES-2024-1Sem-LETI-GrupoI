@@ -14,6 +14,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -24,37 +25,39 @@ public class MainApp extends Application {
     private Scene mainScene;
     private VBox mainMenu;
 
-    private List<Property> properties;
-    private AreaCalculator areaCalculator;
-
     @Override
     public void start(Stage primaryStage) {
         CSVReader csvReader = new CSVReader();
         csvReader.chooseCSVFile();
         csvReader.readCSV();
-        properties = csvReader.createProperties();
-        areaCalculator = new AreaCalculator(properties);
+        List<Property> properties = csvReader.createProperties();
+        AreaCalculator areaCalculator = new AreaCalculator(properties);
 
         Button btnAdjacencyChecker = new Button("Open Adjacency Checker");
         Button btnCalculateArea = new Button("Calcular área região");
         Button btnGraphOwners = new Button("Grafo de donos");
 
         btnAdjacencyChecker.setOnAction(_ -> openAdjacencyChecker());
-        btnCalculateArea.setOnAction(_ -> openRegionSelector(primaryStage));
+        btnCalculateArea.setOnAction(_ -> openRegionSelector(primaryStage, areaCalculator));
         btnGraphOwners.setOnAction(_ -> showGraphOwners());
 
         mainMenu = new VBox(10, btnAdjacencyChecker, btnCalculateArea, btnGraphOwners);
         mainMenu.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
         // Load the background image
-        Image backgroundImage = new Image(getClass().getResourceAsStream("/images.jpeg"));
-        if (backgroundImage.isError()) {
-            System.err.println("Error loading background image.");
+        InputStream imageStream = getClass().getResourceAsStream("/images.jpeg");
+        if (imageStream == null) {
+            System.err.println("Error loading background image: Resource not found.");
         } else {
-            BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-            BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
-                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-            mainMenu.setBackground(new Background(background));
+            Image backgroundImage = new Image(imageStream);
+            if (backgroundImage.isError()) {
+                System.err.println("Error loading background image.");
+            } else {
+                BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+                BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+                mainMenu.setBackground(new Background(background));
+            }
         }
 
         mainScene = new Scene(mainMenu, 400, 300);
@@ -72,15 +75,15 @@ public class MainApp extends Application {
         mainScene.setRoot(layoutWithBackButton);
     }
 
-    private void openRegionSelector(Stage stage) {
+    private void openRegionSelector(Stage stage, AreaCalculator areaCalculator) {
         Button btnFreguesia = new Button("Freguesia");
         Button btnConcelho = new Button("Concelho");
         Button btnDistrito = new Button("Distrito");
         Button backButton = new Button("Back to Main Menu");
 
-        btnFreguesia.setOnAction(_ -> openRegionButtons("Freguesia", stage));
-        btnConcelho.setOnAction(_ -> openRegionButtons("Concelho", stage));
-        btnDistrito.setOnAction(_ -> openRegionButtons("Distrito", stage));
+        btnFreguesia.setOnAction(_ -> openRegionButtons("Freguesia", stage, areaCalculator));
+        btnConcelho.setOnAction(_ -> openRegionButtons("Concelho", stage, areaCalculator));
+        btnDistrito.setOnAction(_ -> openRegionButtons("Distrito", stage, areaCalculator));
         backButton.setOnAction(_ -> showMainMenu());
 
         VBox regionMenu = new VBox(10, btnFreguesia, btnConcelho, btnDistrito, backButton);
@@ -89,7 +92,7 @@ public class MainApp extends Application {
         mainScene.setRoot(regionMenu);
     }
 
-    private void openRegionButtons(String type, Stage stage) {
+    private void openRegionButtons(String type, Stage stage, AreaCalculator areaCalculator) {
         List<String> uniqueRegions = areaCalculator.getUniqueRegions(type);
 
         VBox regionButtons = new VBox(10);
@@ -108,13 +111,13 @@ public class MainApp extends Application {
             Button regionButton = new Button(region);
             regionButton.setOnAction(_ -> {
                 boolean groupByOwner = groupByOwnerCheckbox.isSelected();
-                showAverageArea(type, region, stage, groupByOwner);
+                showAverageArea(type, region, stage, groupByOwner, areaCalculator);
             });
             regionButtons.getChildren().add(regionButton);
         }
 
         Button backButton = new Button("Back");
-        backButton.setOnAction(_ -> openRegionSelector(stage));
+        backButton.setOnAction(_ -> openRegionSelector(stage, areaCalculator));
         regionButtons.getChildren().add(backButton);
 
         ScrollPane scrollPane = new ScrollPane(regionButtons);
@@ -124,7 +127,8 @@ public class MainApp extends Application {
         mainScene.setRoot(scrollPane);
     }
 
-    private void showAverageArea(String type, String region, Stage stage, boolean groupByOwner) {
+    private void showAverageArea(String type, String region, Stage stage, boolean groupByOwner,
+            AreaCalculator areaCalculator) {
         double averageArea;
         if (groupByOwner) {
             averageArea = areaCalculator.calculateAverageAreaWithGroups(type, region);
@@ -134,7 +138,7 @@ public class MainApp extends Application {
 
         Label resultLabel = new Label("Average Area for " + type + " \"" + region + "\": " + averageArea);
         Button backButton = new Button("Back");
-        backButton.setOnAction(_ -> openRegionButtons(type, stage));
+        backButton.setOnAction(_ -> openRegionButtons(type, stage, areaCalculator));
 
         VBox resultLayout = new VBox(10, resultLabel, backButton);
         resultLayout.setPadding(new Insets(20));
