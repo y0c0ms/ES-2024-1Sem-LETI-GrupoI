@@ -208,20 +208,20 @@ public class MainApp extends Application {
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(20));
         layout.setStyle("-fx-alignment: center;");
-    
+
         Label concelhoLabel = new Label("Select Concelho:");
         ComboBox<String> concelhoComboBox = new ComboBox<>();
         concelhoComboBox.getItems().addAll(areaCalculator.getUniqueRegions("Concelho"));
-    
+
         Label promptLabel = new Label("Enter potencialOfSwap:");
         TextField potencialOfSwapInput = new TextField();
-    
+
         Button generateButton = new Button("Generate Suggestions");
-    
+
         TextArea resultTextArea = new TextArea();
         resultTextArea.setEditable(false);
         resultTextArea.setWrapText(true);
-    
+
         generateButton.setOnAction(event -> {
             try {
                 String selectedConcelho = concelhoComboBox.getValue();
@@ -229,29 +229,30 @@ public class MainApp extends Application {
                     resultTextArea.setText("Please select a Concelho.");
                     return;
                 }
-    
+
                 double potencialOfSwap = Double.parseDouble(potencialOfSwapInput.getText());
                 List<Property> filteredProperties = properties.stream()
                         .filter(property -> property.getMunicipio().equalsIgnoreCase(selectedConcelho))
                         .collect(Collectors.toList());
-    
+
                 Map<Integer, List<Property>> ownersPropertyList = new HashMap<>();
                 for (Property property : filteredProperties) {
                     ownersPropertyList.computeIfAbsent(property.getOwner(), k -> new ArrayList<>()).add(property);
                 }
-    
-                PropertyExchange pe = new PropertyExchange(filteredProperties, ownersPropertyList, potencialOfSwap);
+
                 AreaCalculator a = new AreaCalculator(filteredProperties);
-                List<SuggestedExchange> suggestions = PropertyExchange.generateSwapSuggestions(filteredProperties, potencialOfSwap);
-    
+                List<SuggestedExchange> suggestions = PropertyExchange.generateSwapSuggestions(filteredProperties,
+                        potencialOfSwap);
+
                 StringBuilder resultText = new StringBuilder();
-                resultText.append("Initial average area per owner: ").append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho))
-                          .append("\n");
-    
-                PropertyExchange.applySwaps(filteredProperties, suggestions);
-                a= new AreaCalculator(filteredProperties);
+                resultText.append("Initial average area per owner: ")
+                        .append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho))
+                        .append("\n");
+
+                PropertyExchange.Swap(filteredProperties, suggestions);
+                a = new AreaCalculator(filteredProperties);
                 resultText.append("New average area per owner after exchanges: ")
-                          .append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho)).append("\n\n");
+                        .append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho)).append("\n\n");
                 resultText.append("Sample exchanges:\n");
                 for (int i = 0; i < 5 && i < suggestions.size(); i++) {
                     SuggestedExchange exchange = suggestions.get(i);
@@ -260,25 +261,25 @@ public class MainApp extends Application {
                     resultText.append("  Property 2: ").append(exchange.getProperty2().getParNum()).append("\n");
                     resultText.append("  Area gained: ").append(exchange.getGain()).append("\n");
                     resultText.append("  Probability of trade: ").append(exchange.getProbabilityOfTrade())
-                              .append("\n\n");
+                            .append("\n\n");
                 }
-    
+
                 resultTextArea.setText(resultText.toString());
             } catch (NumberFormatException e) {
                 resultTextArea.setText("Invalid input! Please enter a valid number.");
             }
         });
-    
+
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> showMainMenu());
-    
+
         layout.getChildren().addAll(concelhoLabel, concelhoComboBox, promptLabel, potencialOfSwapInput, generateButton,
-                                    resultTextArea, backButton);
-    
+                resultTextArea, backButton);
+
         ScrollPane scrollPane = new ScrollPane(layout);
         scrollPane.setFitToWidth(true);
         scrollPane.setPadding(new Insets(10));
-    
+
         mainScene.setRoot(scrollPane);
     }
 
