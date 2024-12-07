@@ -44,4 +44,4 @@
 - **Gestão do Projeto**: Abordagem Scrum utilizando Trello com Power-Up do GitHub para rastreio entre os cartões das user stories e os eventos respetivos no GitHub (commits, pull requests)
 
 ## Relatório de Avaliação da Qualidade do Software
-O relatório de avaliação da qualidade do software pode ser encontrado [aqui](reports/report.pdf).
+O relatório de avaliação da qualidade do software pode ser encontrado [aqui](src\main\resources).
