@@ -32,14 +32,12 @@ public class MainApp extends Application {
         areaCalculator = new AreaCalculator(properties);
 
         Button btnAdjacencyChecker = new Button("Open Adjacency Checker");
-        Button btnMapVisualizer = new Button("Open Map Visualizer");
         Button btnCalculateArea = new Button("Calcular área região");
 
         btnAdjacencyChecker.setOnAction(_ -> openAdjacencyChecker());
-        btnMapVisualizer.setOnAction(_ -> openMapVisualizer());
         btnCalculateArea.setOnAction(_ -> openRegionSelector(primaryStage));
 
-        mainMenu = new VBox(10, btnAdjacencyChecker, btnMapVisualizer, btnCalculateArea);
+        mainMenu = new VBox(10, btnAdjacencyChecker, btnCalculateArea);
         mainMenu.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
         mainScene = new Scene(mainMenu, 400, 300);
@@ -57,14 +55,6 @@ public class MainApp extends Application {
         mainScene.setRoot(layoutWithBackButton);
     }
 
-    private void openMapVisualizer() {
-        PropertyMapVisualizer mapVisualizer = new PropertyMapVisualizer(this);
-        Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(_ -> showMainMenu());
-
-        VBox layoutWithBackButton = new VBox(backButton, mapVisualizer.getLayout());
-        mainScene.setRoot(layoutWithBackButton);
-    }
 
     private void openRegionSelector(Stage stage) {
         Button btnFreguesia = new Button("Freguesia");
