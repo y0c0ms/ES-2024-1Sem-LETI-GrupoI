@@ -21,7 +21,7 @@ public class CustomPolygon extends Polygon {
         LinearRing[] interiorRings = new LinearRing[numInteriorRings];
 
         for (int i = 0; i < numInteriorRings; i++) {
-            interiorRings[i] = (LinearRing) polygon.getInteriorRingN(i);
+            interiorRings[i] = polygon.getInteriorRingN(i);
         }
 
         return interiorRings;

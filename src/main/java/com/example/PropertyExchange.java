@@ -7,19 +7,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PropertyExchange {
-    //private List<SuggestedExchange> suggestions;
-    //private List<Property> properties;
+
     private Map<Integer, List<Property>> ownersPropertyList;
 
     public List<SuggestedExchange> suggestPropertyExchanges(List<Property> properties) {
         List<SuggestedExchange> suggestions = new ArrayList<>();
 
         // Agrupar propriedades por proprietário
-        Map<Integer, List<Property>> propertiesByOwner = properties.stream()
+        ownersPropertyList = properties.stream()
                 .collect(Collectors.groupingBy(Property::getOwner));
 
         // Calcular a área média inicial de cada proprietário
-        Map<Integer, Double> initialAverageArea = calculateAverageAreaByOwner(propertiesByOwner);
+        Map<Integer, Double> initialAverageArea = calculateAverageAreaByOwner(ownersPropertyList);
 
         // Gerar todas as combinações possíveis de propriedades para troca
         for (int i = 0; i < properties.size(); i++) {
@@ -37,13 +36,15 @@ public class PropertyExchange {
                     // Se a troca for vantajosa para ambos
                     if (potentialGain1 > 0 && potentialGain2 > 0) {
                         double similarityScore = calculateSimilarityScore(property1, property2);
-                        suggestions.add(new SuggestedExchange(property1, property2, potentialGain1, potentialGain2, similarityScore));
+                        suggestions.add(new SuggestedExchange(property1, property2, potentialGain1, potentialGain2,
+                                similarityScore));
                     }
                 }
             }
         }
 
-        // Ordenar sugestões por viabilidade (priorizando maior ganho e menor diferença de área)
+        // Ordenar sugestões por viabilidade (priorizando maior ganho e menor diferença
+        // de área)
         suggestions.sort(Comparator.comparingDouble(SuggestedExchange::getTotalGain).reversed()
                 .thenComparingDouble(SuggestedExchange::getSimilarityScore));
 
@@ -60,11 +61,11 @@ public class PropertyExchange {
                                 .orElse(0.0) // Calcula a média ou usa 0.0 se vazio
                 ));
     }
-    
 
     private double calculatePotentialGain(Property giving, Property receiving, Map<Integer, Double> averageArea) {
         double currentAverage = averageArea.getOrDefault(giving.getOwner(), 0.0);
-        double newAverage = (currentAverage * ownersPropertyList.get(giving.getOwner()).size() - giving.getShapeArea() + receiving.getShapeArea())
+        double newAverage = (currentAverage * ownersPropertyList.get(giving.getOwner()).size() - giving.getShapeArea()
+                + receiving.getShapeArea())
                 / ownersPropertyList.get(giving.getOwner()).size();
         return newAverage - currentAverage;
     }
@@ -80,7 +81,8 @@ public class PropertyExchange {
         private final double gain2;
         private final double similarityScore;
 
-        public SuggestedExchange(Property property1, Property property2, double gain1, double gain2, double similarityScore) {
+        public SuggestedExchange(Property property1, Property property2, double gain1, double gain2,
+                double similarityScore) {
             this.property1 = property1;
             this.property2 = property2;
             this.gain1 = gain1;

@@ -10,8 +10,8 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 
 public class AdjacencyCheckerGUI extends VBox {
-    private List<Property> properties;
-    private VBox layout;
+    private final List<Property> properties;
+    private final VBox layout;
 
     public AdjacencyCheckerGUI() {
         // Initialize properties data

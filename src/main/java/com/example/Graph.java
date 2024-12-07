@@ -8,13 +8,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class represents a graph where nodes are properties, and edges indicate adjacency between properties.
- * It supports adding properties, identifying adjacent properties, and finding groups of properties
+ * This class represents a graph where nodes are properties, and edges indicate
+ * adjacency between properties.
+ * It supports adding properties, identifying adjacent properties, and finding
+ * groups of properties
  * owned by the same owner.
  */
 public class Graph {
-    private List<Property> properties;
-    private Map<Property, List<Property>> adjacencyList;
+    private final List<Property> properties;
+    private final Map<Property, List<Property>> adjacencyList;
 
     /**
      * Constructor for the Graph class.
@@ -26,7 +28,9 @@ public class Graph {
     }
 
     /**
-     * Adds a property to the graph and establishes adjacency relationships with existing properties.
+     * Adds a property to the graph and establishes adjacency relationships with
+     * existing properties.
+     * 
      * @param property The property to be added to the graph.
      */
     public void addProperty(Property property) {
@@ -43,6 +47,7 @@ public class Graph {
 
     /**
      * Creates a bidirectional edge between two properties in the graph.
+     * 
      * @param p1 The first property.
      * @param p2 The second property.
      */
@@ -52,8 +57,11 @@ public class Graph {
     }
 
     /**
-     * Finds and groups properties owned by the same owner, considering adjacency relationships.
-     * @return A list of groups where each group is a list of properties owned by the same owner.
+     * Finds and groups properties owned by the same owner, considering adjacency
+     * relationships.
+     * 
+     * @return A list of groups where each group is a list of properties owned by
+     *         the same owner.
      */
     public List<List<Property>> findOwnerGroups() {
         List<List<Property>> ownerGroups = new ArrayList<>();
@@ -70,10 +78,12 @@ public class Graph {
     }
 
     /**
-     * Performs a depth-first search (DFS) to find all connected properties with the same owner.
+     * Performs a depth-first search (DFS) to find all connected properties with the
+     * same owner.
+     * 
      * @param property The starting property for the DFS.
-     * @param visited A set of properties already visited during the search.
-     * @param group The group of properties being formed.
+     * @param visited  A set of properties already visited during the search.
+     * @param group    The group of properties being formed.
      */
     private void dfs(Property property, Set<Property> visited, List<Property> group) {
         visited.add(property);
@@ -88,6 +98,7 @@ public class Graph {
 
     /**
      * Retrieves the list of properties adjacent to a given property.
+     * 
      * @param property The property whose adjacent properties are to be retrieved.
      * @return A list of properties adjacent to the given property.
      */
@@ -97,6 +108,7 @@ public class Graph {
 
     /**
      * Retrieves all properties in the graph.
+     * 
      * @return A list of all properties in the graph.
      */
     public List<Property> getProperties() {

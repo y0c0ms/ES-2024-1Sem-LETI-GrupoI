@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class AreaCalculator {
-    private List<Property> properties;
+    private final List<Property> properties;
 
     public AreaCalculator(List<Property> properties) {
         this.properties = properties;
@@ -25,19 +25,30 @@ public class AreaCalculator {
      */
     private List<Property> filterPropertiesByRegion(String regionType, String regionName) {
         return properties.stream()
-                .filter(property -> {
-                    switch (regionType.toLowerCase()) {
-                        case "freguesia":
-                            return property.getFreguesia().equalsIgnoreCase(regionName);
-                        case "concelho":
-                            return property.getMunicipio().equalsIgnoreCase(regionName);
-                        case "distrito":
-                            return property.getDistrito().equalsIgnoreCase(regionName);
-                        default:
-                            return false;
-                    }
-                })
+                .filter(property -> isPropertyInRegion(property, regionType, regionName))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if a property is in a specific region.
+     *
+     * @param property   The property to check.
+     * @param regionType The type of the region ("Freguesia", "Concelho",
+     *                   "Distrito").
+     * @param regionName The name of the region to filter.
+     * @return True if the property is in the region, false otherwise.
+     */
+    private boolean isPropertyInRegion(Property property, String regionType, String regionName) {
+        switch (regionType.toLowerCase()) {
+            case "freguesia":
+                return property.getFreguesia().equalsIgnoreCase(regionName);
+            case "concelho":
+                return property.getMunicipio().equalsIgnoreCase(regionName);
+            case "distrito":
+                return property.getDistrito().equalsIgnoreCase(regionName);
+            default:
+                return false;
+        }
     }
 
     /**
@@ -73,20 +84,7 @@ public class AreaCalculator {
      */
     public double calculateAverageAreaWithGroups(String regionType, String regionName) {
         // Filter properties for the given region
-        List<Property> filteredProperties = properties.stream()
-                .filter(property -> {
-                    switch (regionType.toLowerCase()) {
-                        case "freguesia":
-                            return property.getFreguesia().equalsIgnoreCase(regionName);
-                        case "concelho":
-                            return property.getMunicipio().equalsIgnoreCase(regionName);
-                        case "distrito":
-                            return property.getDistrito().equalsIgnoreCase(regionName);
-                        default:
-                            return false;
-                    }
-                })
-                .toList();
+        List<Property> filteredProperties = filterPropertiesByRegion(regionType, regionName);
 
         // Group adjacent properties by the same owner
         List<Set<Property>> groupedProperties = groupAdjacentPropertiesByOwner(filteredProperties);
@@ -162,18 +160,17 @@ public class AreaCalculator {
         }
     }
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         CSVReader r = new CSVReader();
         r.readCSV();
         List<Property> l = r.createProperties();
         AreaCalculator c = new AreaCalculator(l);
         List<Set<Property>> list = c.groupAdjacentPropertiesByOwner(l);
-        for(Set<Property> set: list){
-            for(Property p: set){
+        for (Set<Property> set : list) {
+            for (Property p : set) {
                 System.out.println("Owner: " + p.getOwner() + " pId: " + p.getObjectId());
             }
             System.out.println("-------------------");
         }
-
     }
 }

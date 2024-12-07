@@ -4,6 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -11,16 +12,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JFileChooser;
 
 /**
- * This class provides functionality for reading and processing data from a CSV file.
- * It parses the CSV data and organizes it into a list of Property objects and a map
+ * This class provides functionality for reading and processing data from a CSV
+ * file.
+ * It parses the CSV data and organizes it into a list of Property objects and a
+ * map
  * that associates owners with their respective properties.
  */
 public class CSVReader {
+    private static final Logger LOGGER = Logger.getLogger(CSVReader.class.getName());
     private String csvFilePath = "src\\main\\java\\com\\example\\Madeira-Moodle-1.1.csv";
-    private List<CSVRecord> data;
-    private Map<Integer, List<Property>> ownersPropertyList;
+    private final List<CSVRecord> data;
+    private final Map<Integer, List<Property>> ownersPropertyList;
 
     /**
      * Constructor for the CSVReader class.
@@ -31,26 +39,42 @@ public class CSVReader {
         ownersPropertyList = new HashMap<>();
     }
 
+    public void chooseCSVFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select CSV File");
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            csvFilePath = selectedFile.getAbsolutePath();
+        }
+    }
+
     /**
      * Reads the CSV file and stores the records in the data list.
      * Uses Apache Commons CSV to parse the file.
      */
     public void readCSV() {
+        if (csvFilePath == null || csvFilePath.isEmpty()) {
+            LOGGER.warning("CSV file path is not set. Please choose a CSV file first.");
+            return;
+        }
+
         try (Reader reader = new FileReader(csvFilePath);
-             CSVParser csvParser = new CSVParser(reader,
-                     CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
+                CSVParser csvParser = new CSVParser(reader,
+                        CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
 
             // Adding the read values to the `data` list
             for (CSVRecord csvRecord : csvParser) {
                 data.add(csvRecord);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error reading CSV file", e);
         }
     }
 
     /**
      * Converts the CSV data into a list of Property objects.
+     * 
      * @return A list of Property objects created from the CSV data.
      */
     public List<Property> createProperties() {
@@ -73,7 +97,7 @@ public class CSVReader {
                 Property property = new Property(objectid, par_id, par_num, shapeArea, shapeLength, geometryStr, owner,
                         freguesia, municipio, ilha);
                 properties.add(property);
-                
+
                 // Populate ownersPropertyList map
                 if (!ownersPropertyList.containsKey(property.getOwner())) {
                     List<Property> list = new ArrayList<>();
@@ -84,7 +108,7 @@ public class CSVReader {
                 }
 
             } catch (NumberFormatException e) {
-                System.err.println("Error parsing numeric values in CSV: " + e.getMessage());
+                LOGGER.log(Level.WARNING, "Error parsing numeric values in CSV", e);
             }
         }
 
@@ -93,6 +117,7 @@ public class CSVReader {
 
     /**
      * Helper method to replace commas with dots and parse a string as a double.
+     * 
      * @param value The string value to be parsed.
      * @return The parsed double value.
      */
@@ -103,12 +128,14 @@ public class CSVReader {
 
     /**
      * Retrieves a record by its row index.
+     * 
      * @param index The index of the record to retrieve.
-     * @return The CSVRecord at the specified index, or null if the index is invalid.
+     * @return The CSVRecord at the specified index, or null if the index is
+     *         invalid.
      */
     public CSVRecord getRecord(int index) {
         if (index < 0 || index >= data.size()) {
-            System.err.println("Invalid index");
+            LOGGER.warning("Invalid index");
             return null;
         }
         return data.get(index);
@@ -116,7 +143,9 @@ public class CSVReader {
 
     /**
      * Retrieves the map of owners and their associated properties.
-     * @return A map where keys are owner IDs and values are lists of properties owned by them.
+     * 
+     * @return A map where keys are owner IDs and values are lists of properties
+     *         owned by them.
      */
     public Map<Integer, List<Property>> getOwnersList() {
         return ownersPropertyList;
@@ -124,6 +153,7 @@ public class CSVReader {
 
     /**
      * Retrieves a record by its OBJECTID.
+     * 
      * @param objId The OBJECTID of the record to retrieve.
      * @return The CSVRecord with the specified OBJECTID, or null if not found.
      */
@@ -133,7 +163,7 @@ public class CSVReader {
                 return record;
             }
         }
-        System.out.println("Object ID not found!");
+        LOGGER.info("Object ID not found!");
         return null;
     }
 
@@ -142,8 +172,8 @@ public class CSVReader {
      */
     public void printCSV() {
         try (Reader reader = new FileReader(csvFilePath);
-             CSVParser csvParser = new CSVParser(reader,
-                     CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
+                CSVParser csvParser = new CSVParser(reader,
+                        CSVFormat.DEFAULT.withDelimiter(';').withFirstRecordAsHeader())) {
 
             // Print headers
             List<String> headers = csvParser.getHeaderNames();
@@ -165,12 +195,13 @@ public class CSVReader {
                 System.out.println("---------------------------");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error printing CSV file", e);
         }
     }
 
     /**
      * Main method for testing the CSVReader class.
+     * 
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {

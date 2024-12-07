@@ -2,19 +2,23 @@ package com.example;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-//import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
-/* import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight; */
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Set;
+
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 
 public class MainApp extends Application {
     private Scene mainScene;
@@ -26,20 +30,32 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         CSVReader csvReader = new CSVReader();
+        csvReader.chooseCSVFile();
         csvReader.readCSV();
         properties = csvReader.createProperties();
         areaCalculator = new AreaCalculator(properties);
 
         Button btnAdjacencyChecker = new Button("Open Adjacency Checker");
-        Button btnMapVisualizer = new Button("Open Map Visualizer");
         Button btnCalculateArea = new Button("Calcular área região");
+        Button btnGraphOwners = new Button("Grafo de donos");
 
         btnAdjacencyChecker.setOnAction(_ -> openAdjacencyChecker());
-        btnMapVisualizer.setOnAction(_ -> openMapVisualizer());
         btnCalculateArea.setOnAction(_ -> openRegionSelector(primaryStage));
+        btnGraphOwners.setOnAction(_ -> showGraphOwners());
 
-        mainMenu = new VBox(10, btnAdjacencyChecker, btnMapVisualizer, btnCalculateArea);
+        mainMenu = new VBox(10, btnAdjacencyChecker, btnCalculateArea, btnGraphOwners);
         mainMenu.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
+        // Load the background image
+        Image backgroundImage = new Image(getClass().getResourceAsStream("/images.jpeg"));
+        if (backgroundImage.isError()) {
+            System.err.println("Error loading background image.");
+        } else {
+            BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+            BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+            mainMenu.setBackground(new Background(background));
+        }
 
         mainScene = new Scene(mainMenu, 400, 300);
         primaryStage.setScene(mainScene);
@@ -56,18 +72,9 @@ public class MainApp extends Application {
         mainScene.setRoot(layoutWithBackButton);
     }
 
-    private void openMapVisualizer() {
-        PropertyMapVisualizer mapVisualizer = new PropertyMapVisualizer(this);
-        Button backButton = new Button("Back to Main Menu");
-        backButton.setOnAction(_ -> showMainMenu());
-
-        VBox layoutWithBackButton = new VBox(backButton, mapVisualizer.getLayout());
-        mainScene.setRoot(layoutWithBackButton);
-    }
-
     private void openRegionSelector(Stage stage) {
         Button btnFreguesia = new Button("Freguesia");
-        Button btnConcelho = new Button("Cconcelho");
+        Button btnConcelho = new Button("Concelho");
         Button btnDistrito = new Button("Distrito");
         Button backButton = new Button("Back to Main Menu");
 
@@ -91,7 +98,6 @@ public class MainApp extends Application {
         Label titleLabel = new Label("Select a " + type + ":");
         regionButtons.getChildren().add(titleLabel);
 
-        // Add a checkbox or toggle for "Group by Owner"
         Label groupByOwnerLabel = new Label("Consider adjacent properties with the same owner?");
         CheckBox groupByOwnerCheckbox = new CheckBox();
         groupByOwnerCheckbox.setSelected(false);
@@ -111,9 +117,8 @@ public class MainApp extends Application {
         backButton.setOnAction(_ -> openRegionSelector(stage));
         regionButtons.getChildren().add(backButton);
 
-        // Wrap the VBox in a ScrollPane for scrolling functionality
         ScrollPane scrollPane = new ScrollPane(regionButtons);
-        scrollPane.setFitToWidth(true); // Makes the scroll pane width match the buttons
+        scrollPane.setFitToWidth(true);
         scrollPane.setPadding(new Insets(10));
 
         mainScene.setRoot(scrollPane);
@@ -137,23 +142,62 @@ public class MainApp extends Application {
         mainScene.setRoot(resultLayout);
     }
 
-   /*  private void showUnavailableMessage() {
-        // Create a label to show the "feature unavailable" message
-        Label unavailableLabel = new Label("This feature is currently not available.");
-        unavailableLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
-        unavailableLabel.setTextFill(Color.RED);
+    private void showGraphOwners() {
+        CSVReader r = new CSVReader();
+        r.readCSV();
 
-        // Back button to return to the main menu
-        Button backButton = new Button("Back to Main Menu");
+        // Create GraphOwners instance and build the owner graph
+        GraphOwners go = new GraphOwners(r.createProperties(), r.getOwnersList());
+        Graph<Integer, DefaultEdge> g = go.getOwnerGraph();
+        Set<Integer> ownerIds = go.getOwnerIds();
+        int maxOwnerId = ownerIds.stream().max(Integer::compareTo).orElse(0);
+
+        // Create a TextField for user input
+        TextField ownerIdInput = new TextField();
+        ownerIdInput.setPromptText("Enter Owner ID (Max: " + maxOwnerId + ")");
+
+        Button showNeighborsButton = new Button("Show Neighbors");
+        TextArea resultTextArea = new TextArea();
+        resultTextArea.setEditable(false);
+        resultTextArea.setWrapText(true);
+
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+
+        showNeighborsButton.setOnAction(event -> {
+            try {
+                int ownerId = Integer.parseInt(ownerIdInput.getText());
+                if (ownerId > maxOwnerId) {
+                    errorLabel.setText(
+                            "Invalid Owner ID. Please enter a number less than or equal to " + maxOwnerId + ".");
+                    resultTextArea.clear();
+                } else {
+                    errorLabel.setText("");
+                    resultTextArea.setText("Neighbors of owner " + ownerId + ": " + g.edgesOf(ownerId));
+                }
+            } catch (NumberFormatException e) {
+                errorLabel.setText("Invalid Owner ID. Please enter a valid number.");
+                resultTextArea.clear();
+            } catch (NullPointerException e) {
+                errorLabel.setText("Owner ID not found.");
+                resultTextArea.clear();
+            }
+        });
+
+        Button backButton = new Button("Back");
         backButton.setOnAction(_ -> showMainMenu());
 
-        VBox unavailableLayout = new VBox(20, unavailableLabel, backButton);
-        unavailableLayout.setAlignment(Pos.CENTER);
-        unavailableLayout.setStyle("-fx-padding: 20;");
+        VBox layout = new VBox(10, new Label("Enter Owner ID:"), ownerIdInput, showNeighborsButton, errorLabel,
+                resultTextArea, backButton);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-alignment: center;");
 
-        // Set the new layout with the message as the root of the scene
-        mainScene.setRoot(unavailableLayout);
-    } */
+        ScrollPane scrollPane = new ScrollPane(layout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPadding(new Insets(10));
+
+        mainScene.setRoot(scrollPane);
+    }
 
     public void showMainMenu() {
         mainScene.setRoot(mainMenu);
