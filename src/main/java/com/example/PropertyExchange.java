@@ -2,106 +2,180 @@ package com.example;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+
 public class PropertyExchange {
-
     private Map<Integer, List<Property>> ownersPropertyList;
+    private List<Property> properties;
+    private double potencialOfSwap;
+    private double previousAverage;
+    private double newAverage;
 
-    public List<SuggestedExchange> suggestPropertyExchanges(List<Property> properties) {
-        List<SuggestedExchange> suggestions = new ArrayList<>();
+    public PropertyExchange(List<Property> properties, Map<Integer, List<Property>> ownersPropertyList,
+            double potencialOfSwap) {
+        this.properties = properties;
+        this.ownersPropertyList = ownersPropertyList;
+        this.potencialOfSwap = potencialOfSwap;
+        this.previousAverage = calculateAverageAreaByOwner();
+    }
 
-        // Agrupar propriedades por proprietário
-        ownersPropertyList = properties.stream()
-                .collect(Collectors.groupingBy(Property::getOwner));
+    public List<SuggestedExchange> generateSugestions(String concelho) {
+        List<Property> filteredProperties = properties.stream()
+                .filter(property -> property.getMunicipio().equalsIgnoreCase(concelho))
+                .collect(Collectors.toList());
 
-        // Calcular a área média inicial de cada proprietário
-        Map<Integer, Double> initialAverageArea = calculateAverageAreaByOwner(ownersPropertyList);
-
-        // Gerar todas as combinações possíveis de propriedades para troca
-        for (int i = 0; i < properties.size(); i++) {
-            Property property1 = properties.get(i);
-
-            for (int j = i + 1; j < properties.size(); j++) {
-                Property property2 = properties.get(j);
-
-                // Propriedades precisam ser de donos diferentes
-                if (!(property1.getOwner() == property2.getOwner())) {
-                    // Avaliar a troca
-                    double potentialGain1 = calculatePotentialGain(property1, property2, initialAverageArea);
-                    double potentialGain2 = calculatePotentialGain(property2, property1, initialAverageArea);
-
-                    // Se a troca for vantajosa para ambos
-                    if (potentialGain1 > 0 && potentialGain2 > 0) {
-                        double similarityScore = calculateSimilarityScore(property1, property2);
-                        suggestions.add(new SuggestedExchange(property1, property2, potentialGain1, potentialGain2,
-                                similarityScore));
-                    }
-                }
-            }
-        }
-
-        // Ordenar sugestões por viabilidade (priorizando maior ganho e menor diferença
-        // de área)
-        suggestions.sort(Comparator.comparingDouble(SuggestedExchange::getTotalGain).reversed()
-                .thenComparingDouble(SuggestedExchange::getSimilarityScore));
+        List<SuggestedExchange> suggestions = filteredProperties.parallelStream()
+                .filter(property1 -> property1 != null)
+                .flatMap(property1 -> filteredProperties.stream()
+                        .filter(property2 -> property2 != null && property1.getOwner() != property2.getOwner())
+                        .map(property2 -> {
+                            double area1 = property1.getShapeArea();
+                            double area2 = property2.getShapeArea();
+                            double gain = calculateGain(property1, property2);
+                            double probabilityOfTrade = calculateProbabilityOfTrade(area1, area2);
+                            return new SuggestedExchange(property1, property2, gain, probabilityOfTrade);
+                        })
+                        .filter(exchange -> exchange.getProbabilityOfTrade() > potencialOfSwap))
+                .sorted(Comparator.comparingDouble(SuggestedExchange::getGain).reversed()
+                        .thenComparingDouble(SuggestedExchange::getProbabilityOfTrade).reversed())
+                .collect(Collectors.toList());
 
         return suggestions;
     }
 
-    private Map<Integer, Double> calculateAverageAreaByOwner(Map<Integer, List<Property>> propertiesByOwner) {
-        return propertiesByOwner.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey(), // Define explicitamente a chave (Integer)
-                        entry -> entry.getValue().stream()
-                                .mapToDouble(Property::getShapeArea)
-                                .average()
-                                .orElse(0.0) // Calcula a média ou usa 0.0 se vazio
-                ));
+    private double calculateGain(Property property1, Property property2) {
+        double initialAverage = calculateAverageAreaByOwner();
+        executeExchange(property1, property2);
+        double newAverage = calculateAverageAreaByOwner();
+        undoExchange(property1, property2);
+        return newAverage - initialAverage;
     }
 
-    private double calculatePotentialGain(Property giving, Property receiving, Map<Integer, Double> averageArea) {
-        double currentAverage = averageArea.getOrDefault(giving.getOwner(), 0.0);
-        double newAverage = (currentAverage * ownersPropertyList.get(giving.getOwner()).size() - giving.getShapeArea()
-                + receiving.getShapeArea())
-                / ownersPropertyList.get(giving.getOwner()).size();
-        return newAverage - currentAverage;
+    private double calculateProbabilityOfTrade(double area1, double area2) {
+        return 1.0 - Math.abs(area1 - area2) / Math.max(area1, area2);
     }
 
-    private double calculateSimilarityScore(Property property1, Property property2) {
-        return 1.0 / (1.0 + Math.abs(property1.getShapeArea() - property2.getShapeArea()));
+    private void executeExchange(Property property1, Property property2) {
+        int owner1 = property1.getOwner();
+        int owner2 = property2.getOwner();
+        ownersPropertyList.get(owner1).remove(property1);
+        ownersPropertyList.get(owner2).remove(property2);
+        ownersPropertyList.get(owner1).add(property2);
+        ownersPropertyList.get(owner2).add(property1);
     }
 
-    public static class SuggestedExchange {
-        private final Property property1;
-        private final Property property2;
-        private final double gain1;
-        private final double gain2;
-        private final double similarityScore;
+    private void undoExchange(Property property1, Property property2) {
+        int owner1 = property1.getOwner();
+        int owner2 = property2.getOwner();
+        ownersPropertyList.get(owner1).remove(property2);
+        ownersPropertyList.get(owner2).remove(property1);
+        ownersPropertyList.get(owner1).add(property1);
+        ownersPropertyList.get(owner2).add(property2);
+    }
 
-        public SuggestedExchange(Property property1, Property property2, double gain1, double gain2,
-                double similarityScore) {
-            this.property1 = property1;
-            this.property2 = property2;
-            this.gain1 = gain1;
-            this.gain2 = gain2;
-            this.similarityScore = similarityScore;
+    public double calculateAverageAreaByOwner() {
+        List<Double> ownerAreas = new ArrayList<>();
+        for (int owner : ownersPropertyList.keySet()) {
+            Set<Property> uniqueProperties = new HashSet<>();
+            double totalArea = 0;
+            List<Property> ownerProperties = ownersPropertyList.get(owner);
+
+            for (Property property : ownerProperties) {
+                if (property != null && uniqueProperties.add(property)) {
+                    totalArea += property.getShapeArea();
+                    Set<Property> connectedProperties = findConnectedProperties(property, ownerProperties,
+                            new HashSet<>());
+                    uniqueProperties.addAll(connectedProperties);
+                    totalArea += connectedProperties.stream().mapToDouble(Property::getShapeArea).sum();
+                }
+            }
+
+            if (!uniqueProperties.isEmpty()) {
+                ownerAreas.add(totalArea / uniqueProperties.size());
+            }
+        }
+        return ownerAreas.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+    }
+
+    private Set<Property> findConnectedProperties(Property start, List<Property> properties, Set<Property> visited) {
+        Set<Property> connectedProperties = new HashSet<>(visited);
+        connectedProperties.add(start);
+        for (Property property : properties) {
+            if (property != null && !connectedProperties.contains(property) && start.isAdjacent(property)) {
+                connectedProperties.addAll(findConnectedProperties(property, properties, connectedProperties));
+            }
+        }
+        return connectedProperties;
+    }
+
+    public void executeExchanges(List<SuggestedExchange> suggestions) {
+        for (SuggestedExchange exchange : suggestions) {
+            executeExchange(exchange.getProperty1(), exchange.getProperty2());
+        }
+        newAverage = calculateAverageAreaByOwner();
+    }
+
+    public static void main(String[] args) {
+        // Create sample data
+        List<Property> properties = new ArrayList<>();
+        try {
+            Geometry geometry1 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 100, 100 100, 100 0, 0 0)))");
+            Geometry geometry2 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 150, 150 150, 150 0, 0 0)))");
+            Geometry geometry3 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 75, 75 75, 75 0, 0 0)))");
+            Geometry geometry4 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 125, 125 125, 125 0, 0 0)))");
+            Geometry geometry5 = new WKTReader().read("MULTIPOLYGON (((0 0, 0 50, 50 50, 50 0, 0 0)))");
+            properties.add(
+                    new Property(1, 1, 1, 100, 100, geometry1.toString(), 1, "Freguesia1", "Concelho1", "Distrito1"));
+            properties.add(
+                    new Property(2, 2, 2, 150, 150, geometry2.toString(), 1, "Freguesia1", "Concelho1", "Distrito1"));
+            properties.add(
+                    new Property(3, 3, 3, 75, 75, geometry3.toString(), 2, "Freguesia2", "Concelho1", "Distrito1"));
+            properties.add(
+                    new Property(4, 4, 4, 125, 125, geometry4.toString(), 2, "Freguesia3", "Concelho2", "Distrito1"));
+            properties.add(
+                    new Property(5, 5, 5, 50, 50, geometry5.toString(), 3, "Freguesia1", "Concelho1", "Distrito1"));
+        } catch (Exception e) {
+            System.err.println("Error creating sample data.");
         }
 
-        public double getTotalGain() {
-            return gain1 + gain2;
+        Map<Integer, List<Property>> ownersPropertyList = new HashMap<>();
+        for (Property property : properties) {
+            ownersPropertyList.computeIfAbsent(property.getOwner(), k -> new ArrayList<>()).add(property);
         }
 
-        public double getSimilarityScore() {
-            return similarityScore;
-        }
+        // Initialize PropertyExchange
+        PropertyExchange pe = new PropertyExchange(properties, ownersPropertyList, 0.75);
 
-        @Override
-        public String toString() {
-            return String.format("Exchange %s ↔ %s [Gain1: %.2f, Gain2: %.2f, Similarity: %.2f]",
-                    property1, property2, gain1, gain2, similarityScore);
+        // Generate suggestions
+        List<SuggestedExchange> suggestions = pe.generateSugestions("Concelho1");
+
+        // Print initial average
+        System.out.println("Initial average area per owner: " + pe.calculateAverageAreaByOwner());
+
+        // Execute exchanges
+        pe.executeExchanges(suggestions);
+
+        // Print new average
+        System.out.println("New average area per owner after exchanges: " + pe.calculateAverageAreaByOwner());
+
+        // Print some sample exchanges
+        System.out.println("\nSample exchanges:");
+        for (int i = 0; i < 5 && i < suggestions.size(); i++) {
+            SuggestedExchange exchange = suggestions.get(i);
+            System.out.println("Exchange " + (i + 1) + ":");
+            System.out.println("  Property 1: " + exchange.getProperty1().getParNum());
+            System.out.println("  Property 2: " + exchange.getProperty2().getParNum());
+            System.out.println("  Area gained: " + exchange.getGain());
+            System.out.println("  Probability of trade: " + exchange.getProbabilityOfTrade());
+            System.out.println();
         }
     }
 }

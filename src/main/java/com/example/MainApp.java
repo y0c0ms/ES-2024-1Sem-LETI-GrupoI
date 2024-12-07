@@ -3,20 +3,19 @@ package com.example;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
@@ -36,12 +35,14 @@ public class MainApp extends Application {
         Button btnAdjacencyChecker = new Button("Open Adjacency Checker");
         Button btnCalculateArea = new Button("Calcular área região");
         Button btnGraphOwners = new Button("Grafo de donos");
+        Button btnPropertyExchange = new Button("Property Exchange");
 
         btnAdjacencyChecker.setOnAction(_ -> openAdjacencyChecker());
         btnCalculateArea.setOnAction(_ -> openRegionSelector(primaryStage, areaCalculator));
         btnGraphOwners.setOnAction(_ -> showGraphOwners());
+        btnPropertyExchange.setOnAction(_ -> openPropertyExchange(properties, areaCalculator));
 
-        mainMenu = new VBox(10, btnAdjacencyChecker, btnCalculateArea, btnGraphOwners);
+        mainMenu = new VBox(10, btnAdjacencyChecker, btnCalculateArea, btnGraphOwners, btnPropertyExchange);
         mainMenu.setStyle("-fx-padding: 20; -fx-alignment: center;");
 
         // Load the background image
@@ -195,6 +196,82 @@ public class MainApp extends Application {
                 resultTextArea, backButton);
         layout.setPadding(new Insets(20));
         layout.setStyle("-fx-alignment: center;");
+
+        ScrollPane scrollPane = new ScrollPane(layout);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPadding(new Insets(10));
+
+        mainScene.setRoot(scrollPane);
+    }
+
+    private void openPropertyExchange(List<Property> properties, AreaCalculator areaCalculator) {
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-alignment: center;");
+
+        Label concelhoLabel = new Label("Select Concelho:");
+        ComboBox<String> concelhoComboBox = new ComboBox<>();
+        concelhoComboBox.getItems().addAll(areaCalculator.getUniqueRegions("Concelho"));
+
+        Label promptLabel = new Label("Enter potencialOfSwap:");
+        TextField potencialOfSwapInput = new TextField();
+        Button generateButton = new Button("Generate Suggestions");
+
+        TextArea resultTextArea = new TextArea();
+        resultTextArea.setEditable(false);
+        resultTextArea.setWrapText(true);
+
+        generateButton.setOnAction(event -> {
+            try {
+                String selectedConcelho = concelhoComboBox.getValue();
+                if (selectedConcelho == null || selectedConcelho.isEmpty()) {
+                    resultTextArea.setText("Please select a Concelho.");
+                    return;
+                }
+
+                double potencialOfSwap = Double.parseDouble(potencialOfSwapInput.getText());
+                List<Property> filteredProperties = properties.stream()
+                        .filter(property -> property.getMunicipio().equalsIgnoreCase(selectedConcelho))
+                        .collect(Collectors.toList());
+
+                Map<Integer, List<Property>> ownersPropertyList = new HashMap<>();
+                for (Property property : filteredProperties) {
+                    ownersPropertyList.computeIfAbsent(property.getOwner(), k -> new ArrayList<>()).add(property);
+                }
+
+                PropertyExchange pe = new PropertyExchange(filteredProperties, ownersPropertyList, potencialOfSwap);
+                List<SuggestedExchange> suggestions = pe.generateSugestions(selectedConcelho);
+
+                StringBuilder resultText = new StringBuilder();
+                resultText.append("Initial average area per owner: ").append(pe.calculateAverageAreaByOwner())
+                        .append("\n");
+
+                pe.executeExchanges(suggestions);
+
+                resultText.append("New average area per owner after exchanges: ")
+                        .append(pe.calculateAverageAreaByOwner()).append("\n\n");
+                resultText.append("Sample exchanges:\n");
+                for (int i = 0; i < 5 && i < suggestions.size(); i++) {
+                    SuggestedExchange exchange = suggestions.get(i);
+                    resultText.append("Exchange ").append(i + 1).append(":\n");
+                    resultText.append("  Property 1: ").append(exchange.getProperty1().getParNum()).append("\n");
+                    resultText.append("  Property 2: ").append(exchange.getProperty2().getParNum()).append("\n");
+                    resultText.append("  Area gained: ").append(exchange.getGain()).append("\n");
+                    resultText.append("  Probability of trade: ").append(exchange.getProbabilityOfTrade())
+                            .append("\n\n");
+                }
+
+                resultTextArea.setText(resultText.toString());
+            } catch (NumberFormatException e) {
+                resultTextArea.setText("Invalid input! Please enter a valid number.");
+            }
+        });
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(_ -> showMainMenu());
+
+        layout.getChildren().addAll(concelhoLabel, concelhoComboBox, promptLabel, potencialOfSwapInput, generateButton,
+                resultTextArea, backButton);
 
         ScrollPane scrollPane = new ScrollPane(layout);
         scrollPane.setFitToWidth(true);
