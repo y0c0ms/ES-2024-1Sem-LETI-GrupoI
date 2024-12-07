@@ -24,7 +24,7 @@ public class PropertyExchange {
     public double getPreviousAverage(){
         return previousAverage;
     }
-   public static List<SuggestedExchange> generateSwapSuggestions(List<Property> properties) {
+   public static List<SuggestedExchange> generateSwapSuggestions(List<Property> properties, double potencialOfSwap) {
        List<SuggestedExchange> suggestions = new ArrayList<>();
 
        // Iterate over all pairs of properties
@@ -58,10 +58,10 @@ public class PropertyExchange {
                    double area2 = property2.getShapeArea();
                    double maiorArea = Math.max(area1, area2);
                    double menorArea = Math.min(area1, area2);
-                   double potential = menorArea / maiorArea;
+                   double potential = (menorArea / maiorArea) * 100;
 
                    // Add the swap suggestion if the potential meets the threshold (>= 0.75)
-                   if (potential >= 0.75) {
+                   if (potential >= potencialOfSwap && area1<area2) {
                        suggestions.add(new SuggestedExchange(property1, property2, area1 - area2,potential));
                    }
                } catch (NumberFormatException e) {

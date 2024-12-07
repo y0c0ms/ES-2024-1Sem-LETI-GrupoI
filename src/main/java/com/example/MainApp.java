@@ -242,7 +242,7 @@ public class MainApp extends Application {
     
                 PropertyExchange pe = new PropertyExchange(filteredProperties, ownersPropertyList, potencialOfSwap);
                 AreaCalculator a = new AreaCalculator(filteredProperties);
-                List<SuggestedExchange> suggestions = PropertyExchange.generateSwapSuggestions(filteredProperties);
+                List<SuggestedExchange> suggestions = PropertyExchange.generateSwapSuggestions(filteredProperties, potencialOfSwap);
     
                 StringBuilder resultText = new StringBuilder();
                 resultText.append("Initial average area per owner: ").append(a.calculateAverageAreaWithGroups("Concelho", selectedConcelho))
