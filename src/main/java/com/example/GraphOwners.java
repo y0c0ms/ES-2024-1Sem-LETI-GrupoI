@@ -39,4 +39,11 @@ public class GraphOwners {
         return ownerGraph;
     }
 
+    public static void main(String [] args){
+        CSVReader r = new CSVReader();
+        r.readCSV();
+        GraphOwners go = new GraphOwners(r.createProperties(), r.getOwnersList());
+        Graph<Integer, DefaultEdge> g = go.getOwnerGraph();
+        System.out.println("Vizinhos de 1: " + g.edgesOf(93));
+    }
 }
