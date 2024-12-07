@@ -1,0 +1,65 @@
+@options
+@argfile
+-classpath
+'C:/Users/Utilizador/.m2/repository/org/apache/commons/commons-csv/1.8/commons-csv-1.8.jar;C:/Users/Utilizador/.m2/repository/org/jgrapht/jgrapht-core/1.5.2/jgrapht-core-1.5.2.jar;C:/Users/Utilizador/.m2/repository/org/jheaps/jheaps/0.14/jheaps-0.14.jar;C:/Users/Utilizador/.m2/repository/org/apfloat/apfloat/1.10.1/apfloat-1.10.1.jar;C:/Users/Utilizador/.m2/repository/org/locationtech/jts/jts-core/1.18.0/jts-core-1.18.0.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-controls/22/javafx-controls-22.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-controls/22/javafx-controls-22-win.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-fxml/22/javafx-fxml-22.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-fxml/22/javafx-fxml-22-win.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-graphics/22/javafx-graphics-22.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-graphics/22/javafx-graphics-22-win.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-base/22/javafx-base-22.jar;C:/Users/Utilizador/.m2/repository/org/openjfx/javafx-base/22/javafx-base-22-win.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'23'
+-sourcepath
+'D:/ProjEngSoft/src/main/java'
+-author
+-bottom
+'Copyright &#169; 1980. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'D:/ProjEngSoft/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'demo 1 API'
+-use
+-version
+-windowtitle
+'demo 1 API'
+'D:/ProjEngSoft/src/main/java/com/example/AdjacencyCheckerGUI.java'
+'D:/ProjEngSoft/src/main/java/com/example/AreaCalculator.java'
+'D:/ProjEngSoft/src/main/java/com/example/CSVReader.java'
+'D:/ProjEngSoft/src/main/java/com/example/CustomPolygon.java'
+'D:/ProjEngSoft/src/main/java/com/example/Graph.java'
+'D:/ProjEngSoft/src/main/java/com/example/GraphOwners.java'
+'D:/ProjEngSoft/src/main/java/com/example/Main.java'
+'D:/ProjEngSoft/src/main/java/com/example/MainApp.java'
+'D:/ProjEngSoft/src/main/java/com/example/Property.java'
+'D:/ProjEngSoft/src/main/java/com/example/PropertyExchange.java'
+'D:/ProjEngSoft/src/main/java/com/example/SuggestedExchange.java'
+C:\Users\Utilizador\.m2\repository\org\apache\commons\commons-csv\1.8\commons-csv-1.8.jar = 1731300322363
+C:\Users\Utilizador\.m2\repository\org\jgrapht\jgrapht-core\1.5.2\jgrapht-core-1.5.2.jar = 1731347967856
+C:\Users\Utilizador\.m2\repository\org\jheaps\jheaps\0.14\jheaps-0.14.jar = 1731347968249
+C:\Users\Utilizador\.m2\repository\org\apfloat\apfloat\1.10.1\apfloat-1.10.1.jar = 1731347969185
+C:\Users\Utilizador\.m2\repository\org\locationtech\jts\jts-core\1.18.0\jts-core-1.18.0.jar = 1731365157054
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-controls\22\javafx-controls-22.jar = 1731384933948
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-controls\22\javafx-controls-22-win.jar = 1731384937017
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-fxml\22\javafx-fxml-22.jar = 1731384934094
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-fxml\22\javafx-fxml-22-win.jar = 1731384934311
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-graphics\22\javafx-graphics-22.jar = 1731384934094
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-graphics\22\javafx-graphics-22-win.jar = 1731384937524
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-base\22\javafx-base-22.jar = 1731384934189
+C:\Users\Utilizador\.m2\repository\org\openjfx\javafx-base\22\javafx-base-22-win.jar = 1731384934971
+D:\ProjEngSoft\src\main\java = 1731270223261
+D:\ProjEngSoft\target\site\apidocs\allclasses-index.html = 1733613907691
+D:\ProjEngSoft\target\site\apidocs\allpackages-index.html = 1733613907692
+D:\ProjEngSoft\target\site\apidocs\element-list = 1733613907650
+D:\ProjEngSoft\target\site\apidocs\help-doc.html = 1733613907710
+D:\ProjEngSoft\target\site\apidocs\index-all.html = 1733613907706
+D:\ProjEngSoft\target\site\apidocs\index.html = 1733613907708
+D:\ProjEngSoft\target\site\apidocs\member-search-index.js = 1733613907694
+D:\ProjEngSoft\target\site\apidocs\module-search-index.js = 1733613907692
+D:\ProjEngSoft\target\site\apidocs\overview-tree.html = 1733613907684
+D:\ProjEngSoft\target\site\apidocs\package-search-index.js = 1733613907693
+D:\ProjEngSoft\target\site\apidocs\search.html = 1733613907707
+D:\ProjEngSoft\target\site\apidocs\serialized-form.html = 1733613907663
+D:\ProjEngSoft\target\site\apidocs\tag-search-index.js = 1733613907694
+D:\ProjEngSoft\target\site\apidocs\type-search-index.js = 1733613907693

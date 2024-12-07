@@ -1,6 +1,11 @@
 com\example\CSVReader.class
 com\example\Main.class
-com\example\PropertyMapVisualizer.class
+com\example\MainApp.class
+com\example\GraphOwners.class
+com\example\SuggestedExchange.class
 com\example\AdjacencyCheckerGUI.class
+com\example\AreaCalculator.class
 com\example\Property.class
 com\example\Graph.class
+com\example\CustomPolygon.class
+com\example\PropertyExchange.class
