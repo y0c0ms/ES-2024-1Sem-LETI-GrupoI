@@ -6,7 +6,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class AreaCalculatorTest {
 

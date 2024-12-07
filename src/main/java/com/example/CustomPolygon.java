@@ -1,7 +1,11 @@
 package com.example;
 
-import org.locationtech.jts.geom.*;
+
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 
 public class CustomPolygon extends Polygon {
